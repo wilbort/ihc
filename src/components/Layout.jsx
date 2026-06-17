@@ -1,7 +1,7 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { LogOut, Building2, Menu, X, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const navItems = {
   patient: [
@@ -37,6 +37,7 @@ const navItems = {
 function NavDropdown({ item }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const itemRefs = useRef([]);
   const location = useLocation();
   const childActive = item.children.some(c => location.pathname === c.to);
 
@@ -46,10 +47,26 @@ function NavDropdown({ item }) {
     return () => document.removeEventListener('mousedown', handle);
   }, []);
 
+  useEffect(() => {
+    if (open && itemRefs.current[0]) itemRefs.current[0].focus();
+  }, [open]);
+
+  const handleButtonKey = useCallback((e) => {
+    if (e.key === 'Escape') { setOpen(false); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); }
+  }, []);
+
+  const handleItemKey = useCallback((e, idx) => {
+    if (e.key === 'Escape') { setOpen(false); ref.current?.querySelector('button')?.focus(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); itemRefs.current[idx + 1]?.focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); idx === 0 ? ref.current?.querySelector('button')?.focus() : itemRefs.current[idx - 1]?.focus(); }
+  }, []);
+
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
+        onKeyDown={handleButtonKey}
         className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center gap-1 ${
           childActive ? 'bg-sky-50 text-sky-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
         }`}
@@ -60,12 +77,15 @@ function NavDropdown({ item }) {
         <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-white rounded-xl border border-gray-200 shadow-lg py-1 min-w-[200px] z-50">
-          {item.children.map(child => (
+        <div className="absolute top-full left-0 mt-1 bg-white rounded-xl border border-gray-200 shadow-lg py-1 min-w-[200px] z-50" role="menu">
+          {item.children.map((child, idx) => (
             <NavLink
               key={child.to}
               to={child.to}
+              ref={el => itemRefs.current[idx] = el}
               onClick={() => setOpen(false)}
+              onKeyDown={(e) => handleItemKey(e, idx)}
+              role="menuitem"
               className={({ isActive }) =>
                 `block px-4 py-2.5 text-sm font-medium min-h-[44px] flex items-center ${
                   isActive ? 'bg-sky-50 text-sky-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -93,6 +113,9 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-sky-600 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium">
+        Saltar al contenido principal
+      </a>
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
@@ -189,7 +212,7 @@ export default function Layout() {
         )}
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <Outlet />
       </main>
     </div>
