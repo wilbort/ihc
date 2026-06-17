@@ -12697,10 +12697,18 @@ function AppProvider({ children }) {
 			return entry;
 		}, [queue, nextQueueId]),
 		updateQueueStatus: (0, import_react.useCallback)((id, status) => {
-			setQueue((prev) => prev.map((q) => q.id === id ? {
-				...q,
-				status
-			} : q));
+			const now = /* @__PURE__ */ new Date();
+			const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+			setQueue((prev) => prev.map((q) => {
+				if (q.id !== id) return q;
+				const updates = { status };
+				if (status === "in_service") updates.startedAt = timeStr;
+				if (status === "completed") updates.completedAt = timeStr;
+				return {
+					...q,
+					...updates
+				};
+			}));
 			if (status === "completed") {
 				const entry = queue.find((q) => q.id === id);
 				if (entry) completeAppointment(entry.appointmentId);
@@ -12870,6 +12878,19 @@ var createLucideIcon = (iconName, iconNode) => {
 	Component.displayName = toPascalCase(iconName);
 	return Component;
 };
+/**
+* @license lucide-react v1.16.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Bell = createLucideIcon("bell", [["path", {
+	d: "M10.268 21a2 2 0 0 0 3.464 0",
+	key: "vwvbt9"
+}], ["path", {
+	d: "M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326",
+	key: "11g9vi"
+}]]);
 /**
 * @license lucide-react v1.16.0 - ISC
 *
@@ -13361,6 +13382,34 @@ var Search = createLucideIcon("search", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var Shuffle = createLucideIcon("shuffle", [
+	["path", {
+		d: "m18 14 4 4-4 4",
+		key: "10pe0f"
+	}],
+	["path", {
+		d: "m18 2 4 4-4 4",
+		key: "pucp1d"
+	}],
+	["path", {
+		d: "M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22",
+		key: "1ailkh"
+	}],
+	["path", {
+		d: "M2 6h1.972a4 4 0 0 1 3.6 2.2",
+		key: "km57vx"
+	}],
+	["path", {
+		d: "M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45",
+		key: "os18l9"
+	}]
+]);
+/**
+* @license lucide-react v1.16.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Stethoscope = createLucideIcon("stethoscope", [
 	["path", {
 		d: "M11 2v2",
@@ -13592,6 +13641,7 @@ var navItems = {
 function NavDropdown({ item }) {
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const ref = (0, import_react.useRef)(null);
+	const itemRefs = (0, import_react.useRef)([]);
 	const location = useLocation();
 	const childActive = item.children.some((c) => location.pathname === c.to);
 	(0, import_react.useEffect)(() => {
@@ -13601,11 +13651,36 @@ function NavDropdown({ item }) {
 		document.addEventListener("mousedown", handle);
 		return () => document.removeEventListener("mousedown", handle);
 	}, []);
+	(0, import_react.useEffect)(() => {
+		if (open && itemRefs.current[0]) itemRefs.current[0].focus();
+	}, [open]);
+	const handleButtonKey = (0, import_react.useCallback)((e) => {
+		if (e.key === "Escape") setOpen(false);
+		if (e.key === "ArrowDown") {
+			e.preventDefault();
+			setOpen(true);
+		}
+	}, []);
+	const handleItemKey = (0, import_react.useCallback)((e, idx) => {
+		if (e.key === "Escape") {
+			setOpen(false);
+			ref.current?.querySelector("button")?.focus();
+		}
+		if (e.key === "ArrowDown") {
+			e.preventDefault();
+			itemRefs.current[idx + 1]?.focus();
+		}
+		if (e.key === "ArrowUp") {
+			e.preventDefault();
+			idx === 0 ? ref.current?.querySelector("button")?.focus() : itemRefs.current[idx - 1]?.focus();
+		}
+	}, []);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		ref,
 		className: "relative",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 			onClick: () => setOpen(!open),
+			onKeyDown: handleButtonKey,
 			className: `px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center gap-1 ${childActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`,
 			"aria-expanded": open,
 			"aria-haspopup": "true",
@@ -13615,9 +13690,13 @@ function NavDropdown({ item }) {
 			})]
 		}), open && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			className: "absolute top-full left-0 mt-1 bg-white rounded-xl border border-gray-200 shadow-lg py-1 min-w-[200px] z-50",
-			children: item.children.map((child) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
+			role: "menu",
+			children: item.children.map((child, idx) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
 				to: child.to,
+				ref: (el) => itemRefs.current[idx] = el,
 				onClick: () => setOpen(false),
+				onKeyDown: (e) => handleItemKey(e, idx),
+				role: "menuitem",
 				className: ({ isActive }) => `block px-4 py-2.5 text-sm font-medium min-h-[44px] flex items-center ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`,
 				children: child.label
 			}, child.to))
@@ -13636,91 +13715,100 @@ function Layout() {
 	const isEndRoute = (to) => to === "/patient" || to === "/receptionist" || to === "/admin";
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "min-h-screen bg-gray-50",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-			className: "bg-white border-b border-gray-200 sticky top-0 z-50",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "max-w-7xl mx-auto px-4 sm:px-6",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between h-16",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-3",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, {
-								className: "w-8 h-8 text-sky-600",
-								"aria-hidden": "true"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-lg font-bold text-gray-900",
-								children: "Clínica Auna"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "hidden sm:inline text-sm text-gray-500 ml-2",
-								children: "Trujillo"
-							})] })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
-							className: "hidden md:flex items-center gap-1",
-							"aria-label": "Navegación principal",
-							children: items.map((item) => item.children ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavDropdown, { item }, item.label) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
-								to: item.to,
-								end: isEndRoute(item.to),
-								className: ({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`,
-								children: item.label
-							}, item.to))
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex items-center gap-3",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "hidden sm:block text-sm text-gray-600",
-									children: currentUser?.name
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-									onClick: handleLogout,
-									className: "flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] justify-center",
-									"aria-label": "Cerrar sesión",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogOut, {
-										className: "w-5 h-5",
-										"aria-hidden": "true"
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "hidden sm:inline",
-										children: "Salir"
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									onClick: () => setMobileOpen(!mobileOpen),
-									className: "md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-lg",
-									"aria-label": mobileOpen ? "Cerrar menú" : "Abrir menú",
-									children: mobileOpen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-6 h-6" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "w-6 h-6" })
-								})
-							]
-						})
-					]
-				})
-			}), mobileOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
-				className: "md:hidden border-t border-gray-200 bg-white px-4 py-2",
-				"aria-label": "Navegación móvil",
-				children: items.map((item) => item.children ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "py-1",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider",
-						children: item.label
-					}), item.children.map((child) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
-						to: child.to,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+				href: "#main-content",
+				className: "sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-sky-600 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium",
+				children: "Saltar al contenido principal"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
+				className: "bg-white border-b border-gray-200 sticky top-0 z-50",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "max-w-7xl mx-auto px-4 sm:px-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-between h-16",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building2, {
+									className: "w-8 h-8 text-sky-600",
+									"aria-hidden": "true"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-lg font-bold text-gray-900",
+									children: "Clínica Auna"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "hidden sm:inline text-sm text-gray-500 ml-2",
+									children: "Trujillo"
+								})] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
+								className: "hidden md:flex items-center gap-1",
+								"aria-label": "Navegación principal",
+								children: items.map((item) => item.children ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavDropdown, { item }, item.label) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
+									to: item.to,
+									end: isEndRoute(item.to),
+									className: ({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`,
+									children: item.label
+								}, item.to))
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-3",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "hidden sm:block text-sm text-gray-600",
+										children: currentUser?.name
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										onClick: handleLogout,
+										className: "flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] justify-center",
+										"aria-label": "Cerrar sesión",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LogOut, {
+											className: "w-5 h-5",
+											"aria-hidden": "true"
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "hidden sm:inline",
+											children: "Salir"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+										onClick: () => setMobileOpen(!mobileOpen),
+										className: "md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-lg",
+										"aria-label": mobileOpen ? "Cerrar menú" : "Abrir menú",
+										children: mobileOpen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "w-6 h-6" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Menu, { className: "w-6 h-6" })
+									})
+								]
+							})
+						]
+					})
+				}), mobileOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
+					className: "md:hidden border-t border-gray-200 bg-white px-4 py-2",
+					"aria-label": "Navegación móvil",
+					children: items.map((item) => item.children ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "py-1",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider",
+							children: item.label
+						}), item.children.map((child) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
+							to: child.to,
+							onClick: () => setMobileOpen(false),
+							className: ({ isActive }) => `block pl-6 pr-3 py-3 rounded-lg text-sm font-medium min-h-[44px] ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100"}`,
+							children: child.label
+						}, child.to))]
+					}, item.label) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
+						to: item.to,
+						end: isEndRoute(item.to),
 						onClick: () => setMobileOpen(false),
-						className: ({ isActive }) => `block pl-6 pr-3 py-3 rounded-lg text-sm font-medium min-h-[44px] ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100"}`,
-						children: child.label
-					}, child.to))]
-				}, item.label) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavLink, {
-					to: item.to,
-					end: isEndRoute(item.to),
-					onClick: () => setMobileOpen(false),
-					className: ({ isActive }) => `block px-3 py-3 rounded-lg text-sm font-medium min-h-[44px] ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100"}`,
-					children: item.label
-				}, item.to))
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
-			className: "max-w-7xl mx-auto px-4 sm:px-6 py-6",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
-		})]
+						className: ({ isActive }) => `block px-3 py-3 rounded-lg text-sm font-medium min-h-[44px] ${isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-100"}`,
+						children: item.label
+					}, item.to))
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
+				id: "main-content",
+				className: "max-w-7xl mx-auto px-4 sm:px-6 py-6",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
+			})
+		]
 	});
 }
 //#endregion
@@ -14166,6 +14254,34 @@ function NewAppointment$1() {
 						]
 					})
 				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-green-50 border border-green-200 rounded-xl p-4 mb-4 flex items-start gap-3 text-left",
+					role: "status",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, {
+						className: "w-5 h-5 text-green-600 mt-0.5 shrink-0",
+						"aria-hidden": "true"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm font-medium text-green-800",
+						children: "Notificación enviada"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-green-700 mt-0.5",
+						children: "Se ha enviado una confirmación a tu correo electrónico registrado."
+					})] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-sky-50 border border-sky-200 rounded-xl p-4 mb-6 flex items-start gap-3 text-left",
+					role: "status",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, {
+						className: "w-5 h-5 text-sky-600 mt-0.5 shrink-0",
+						"aria-hidden": "true"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm font-medium text-sky-800",
+						children: "Recordatorio programado"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-sky-700 mt-0.5",
+						children: "Recibirás un recordatorio 24 horas antes de tu cita."
+					})] })]
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "text-sm text-gray-500 mb-6",
 					children: "Recuerda presentarte con anticipación a tu cita."
@@ -14324,6 +14440,34 @@ function NewAppointment$1() {
 	});
 }
 //#endregion
+//#region src/hooks/useFocusTrap.js
+var FOCUSABLE = "button, [href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])";
+function useFocusTrap(isOpen) {
+	const trapRef = (0, import_react.useRef)(null);
+	(0, import_react.useEffect)(() => {
+		if (!isOpen || !trapRef.current) return;
+		const trap = trapRef.current;
+		trap.querySelectorAll(FOCUSABLE)[0]?.focus();
+		const handleKey = (e) => {
+			if (e.key !== "Tab") return;
+			const els = trap.querySelectorAll(FOCUSABLE);
+			if (!els.length) return;
+			const firstEl = els[0];
+			const lastEl = els[els.length - 1];
+			if (e.shiftKey && document.activeElement === firstEl) {
+				e.preventDefault();
+				lastEl.focus();
+			} else if (!e.shiftKey && document.activeElement === lastEl) {
+				e.preventDefault();
+				firstEl.focus();
+			}
+		};
+		trap.addEventListener("keydown", handleKey);
+		return () => trap.removeEventListener("keydown", handleKey);
+	}, [isOpen]);
+	return trapRef;
+}
+//#endregion
 //#region src/pages/patient/MyAppointments.jsx
 function MyAppointments() {
 	const { currentUser, getPatientAppointments, cancelAppointment, rescheduleAppointment, doctors, specialties, getAvailableSlots } = useApp();
@@ -14331,6 +14475,8 @@ function MyAppointments() {
 	const [newDate, setNewDate] = (0, import_react.useState)("");
 	const [newTime, setNewTime] = (0, import_react.useState)("");
 	const [cancelError, setCancelError] = (0, import_react.useState)(null);
+	const [confirmCancelId, setConfirmCancelId] = (0, import_react.useState)(null);
+	const cancelRef = useFocusTrap(!!confirmCancelId);
 	const canCancelAppt = (appt) => {
 		const now = /* @__PURE__ */ new Date();
 		return (/* @__PURE__ */ new Date(`${appt.date}T${appt.time}:00`) - now) / (1e3 * 60 * 60) >= 2;
@@ -14341,7 +14487,11 @@ function MyAppointments() {
 			setTimeout(() => setCancelError(null), 4e3);
 			return;
 		}
-		cancelAppointment(appt.id);
+		setConfirmCancelId(appt.id);
+	};
+	const executeCancel = () => {
+		cancelAppointment(confirmCancelId);
+		setConfirmCancelId(null);
 	};
 	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
 	const upcoming = getPatientAppointments(currentUser?.patientId).filter((a) => a.date >= today && a.status === "confirmed").sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
@@ -14509,6 +14659,47 @@ function MyAppointments() {
 						})
 					]
 				}, appt.id))
+			}),
+			confirmCancelId && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4",
+				role: "dialog",
+				"aria-label": "Confirmar cancelación",
+				onKeyDown: (e) => {
+					if (e.key === "Escape") setConfirmCancelId(null);
+				},
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					ref: cancelRef,
+					className: "bg-white rounded-2xl w-full max-w-sm p-6 text-center",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, {
+								className: "w-6 h-6 text-red-600",
+								"aria-hidden": "true"
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "text-lg font-bold text-gray-900 mb-2",
+							children: "¿Cancelar esta cita?"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-gray-600 mb-6",
+							children: "Esta acción no se puede deshacer. El horario quedará libre para otros pacientes."
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								onClick: () => setConfirmCancelId(null),
+								className: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]",
+								children: "No, mantener"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								onClick: executeCancel,
+								className: "flex-1 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 min-h-[44px]",
+								children: "Sí, cancelar"
+							})]
+						})
+					]
+				})
 			})
 		]
 	});
@@ -15032,7 +15223,18 @@ function SearchPatient() {
 	const [selected, setSelected] = (0, import_react.useState)(null);
 	const [editing, setEditing] = (0, import_react.useState)(false);
 	const [editForm, setEditForm] = (0, import_react.useState)({});
+	const [editErrors, setEditErrors] = (0, import_react.useState)({});
 	const [editSuccess, setEditSuccess] = (0, import_react.useState)(false);
+	const validateEdit = () => {
+		const errs = {};
+		if (editForm.phone && !/^\d{9}$/.test(editForm.phone)) errs.phone = "El teléfono debe tener 9 dígitos";
+		if (editForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.email)) errs.email = "Ingresa un correo electrónico válido";
+		if (editForm.birthDate) {
+			if (/* @__PURE__ */ new Date(editForm.birthDate + "T00:00:00") > /* @__PURE__ */ new Date()) errs.birthDate = "La fecha de nacimiento no puede ser futura";
+		}
+		setEditErrors(errs);
+		return Object.keys(errs).length === 0;
+	};
 	const displayedPatients = query.trim() ? searchPatients(query) : patients;
 	const handleSearch = (e) => {
 		e.preventDefault();
@@ -15191,45 +15393,96 @@ function SearchPatient() {
 					}), editing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "grid sm:grid-cols-2 gap-4",
 						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-								className: "block text-sm font-medium text-gray-700 mb-1",
-								children: "Teléfono"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-								type: "tel",
-								value: editForm.phone,
-								onChange: (e) => setEditForm((prev) => ({
-									...prev,
-									phone: e.target.value
-								})),
-								maxLength: 9,
-								placeholder: "987654321",
-								className: "w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]"
-							})] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-								className: "block text-sm font-medium text-gray-700 mb-1",
-								children: "Correo electrónico"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-								type: "email",
-								value: editForm.email,
-								onChange: (e) => setEditForm((prev) => ({
-									...prev,
-									email: e.target.value
-								})),
-								placeholder: "correo@ejemplo.com",
-								className: "w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]"
-							})] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-								className: "block text-sm font-medium text-gray-700 mb-1",
-								children: "Fecha de nacimiento"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-								type: "date",
-								value: editForm.birthDate,
-								onChange: (e) => setEditForm((prev) => ({
-									...prev,
-									birthDate: e.target.value
-								})),
-								className: "w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]"
-							})] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									className: "block text-sm font-medium text-gray-700 mb-1",
+									children: "Teléfono"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+									type: "tel",
+									value: editForm.phone,
+									onChange: (e) => {
+										setEditForm((prev) => ({
+											...prev,
+											phone: e.target.value
+										}));
+										setEditErrors((prev) => ({
+											...prev,
+											phone: void 0
+										}));
+									},
+									maxLength: 9,
+									placeholder: "987654321",
+									className: `w-full px-4 py-3 border rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.phone ? "border-red-400" : "border-gray-300"}`,
+									"aria-invalid": !!editErrors.phone,
+									"aria-describedby": editErrors.phone ? "err-phone" : void 0
+								}),
+								editErrors.phone && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									id: "err-phone",
+									className: "text-xs text-red-600 mt-1",
+									role: "alert",
+									children: editErrors.phone
+								})
+							] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									className: "block text-sm font-medium text-gray-700 mb-1",
+									children: "Correo electrónico"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+									type: "email",
+									value: editForm.email,
+									onChange: (e) => {
+										setEditForm((prev) => ({
+											...prev,
+											email: e.target.value
+										}));
+										setEditErrors((prev) => ({
+											...prev,
+											email: void 0
+										}));
+									},
+									placeholder: "correo@ejemplo.com",
+									className: `w-full px-4 py-3 border rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.email ? "border-red-400" : "border-gray-300"}`,
+									"aria-invalid": !!editErrors.email,
+									"aria-describedby": editErrors.email ? "err-email" : void 0
+								}),
+								editErrors.email && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									id: "err-email",
+									className: "text-xs text-red-600 mt-1",
+									role: "alert",
+									children: editErrors.email
+								})
+							] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									className: "block text-sm font-medium text-gray-700 mb-1",
+									children: "Fecha de nacimiento"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+									type: "date",
+									value: editForm.birthDate,
+									onChange: (e) => {
+										setEditForm((prev) => ({
+											...prev,
+											birthDate: e.target.value
+										}));
+										setEditErrors((prev) => ({
+											...prev,
+											birthDate: void 0
+										}));
+									},
+									className: `w-full px-4 py-3 border rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.birthDate ? "border-red-400" : "border-gray-300"}`,
+									"aria-invalid": !!editErrors.birthDate,
+									"aria-describedby": editErrors.birthDate ? "err-birth" : void 0
+								}),
+								editErrors.birthDate && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									id: "err-birth",
+									className: "text-xs text-red-600 mt-1",
+									role: "alert",
+									children: editErrors.birthDate
+								})
+							] }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 								className: "block text-sm font-medium text-gray-700 mb-1",
 								children: "Dirección"
@@ -15247,13 +15500,15 @@ function SearchPatient() {
 								className: "sm:col-span-2 flex gap-2 mt-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 									onClick: () => {
-										updatePatient(selected.id, editForm);
-										setSelected({
-											...selected,
-											...editForm
-										});
-										setEditing(false);
-										setEditSuccess(true);
+										if (validateEdit()) {
+											updatePatient(selected.id, editForm);
+											setSelected({
+												...selected,
+												...editForm
+											});
+											setEditing(false);
+											setEditSuccess(true);
+										}
 									},
 									className: "px-6 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors min-h-[44px]",
 									children: "Guardar cambios"
@@ -15261,6 +15516,7 @@ function SearchPatient() {
 									onClick: () => {
 										setEditing(false);
 										setEditSuccess(false);
+										setEditErrors({});
 									},
 									className: "px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]",
 									children: "Cancelar"
@@ -15392,6 +15648,9 @@ function Appointments() {
 	const [rescheduleId, setRescheduleId] = (0, import_react.useState)(null);
 	const [newDate, setNewDate] = (0, import_react.useState)("");
 	const [newTime, setNewTime] = (0, import_react.useState)("");
+	const [confirmCancelId, setConfirmCancelId] = (0, import_react.useState)(null);
+	const rescheduleRef = useFocusTrap(!!rescheduleId);
+	const cancelRef = useFocusTrap(!!confirmCancelId);
 	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
 	const getPatient = (id) => patients.find((p) => p.id === id);
 	const getDoctorName = (id) => doctors.find((d) => d.id === id)?.name || "";
@@ -15434,7 +15693,11 @@ function Appointments() {
 			setTimeout(() => setCancelWarning(null), 5e3);
 			return;
 		}
-		cancelAppointment(appt.id);
+		setConfirmCancelId(appt.id);
+	};
+	const executeCancel = () => {
+		cancelAppointment(confirmCancelId);
+		setConfirmCancelId(null);
 	};
 	const maxDate = /* @__PURE__ */ new Date();
 	maxDate.setDate(maxDate.getDate() + 30);
@@ -15668,7 +15931,15 @@ function Appointments() {
 			className: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4",
 			role: "dialog",
 			"aria-label": "Reprogramar cita",
+			onKeyDown: (e) => {
+				if (e.key === "Escape") {
+					setRescheduleId(null);
+					setNewDate("");
+					setNewTime("");
+				}
+			},
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				ref: rescheduleRef,
 				className: "bg-white rounded-2xl w-full max-w-md p-6",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
@@ -15739,6 +16010,47 @@ function Appointments() {
 							},
 							className: "px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]",
 							children: "Cancelar"
+						})]
+					})
+				]
+			})
+		}),
+		confirmCancelId && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4",
+			role: "dialog",
+			"aria-label": "Confirmar cancelación",
+			onKeyDown: (e) => {
+				if (e.key === "Escape") setConfirmCancelId(null);
+			},
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				ref: cancelRef,
+				className: "bg-white rounded-2xl w-full max-w-sm p-6 text-center",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, {
+							className: "w-6 h-6 text-red-600",
+							"aria-hidden": "true"
+						})
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "text-lg font-bold text-gray-900 mb-2",
+						children: "¿Cancelar esta cita?"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm text-gray-600 mb-6",
+						children: "Esta acción no se puede deshacer. El horario quedará libre para otros pacientes."
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => setConfirmCancelId(null),
+							className: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]",
+							children: "No, mantener"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: executeCancel,
+							className: "flex-1 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 min-h-[44px]",
+							children: "Sí, cancelar"
 						})]
 					})
 				]
@@ -15881,6 +16193,34 @@ function NewAppointment() {
 							})
 						]
 					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-green-50 border border-green-200 rounded-xl p-4 mb-4 flex items-start gap-3 text-left",
+					role: "status",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Bell, {
+						className: "w-5 h-5 text-green-600 mt-0.5 shrink-0",
+						"aria-hidden": "true"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm font-medium text-green-800",
+						children: "Notificación enviada al paciente"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-green-700 mt-0.5",
+						children: "Se ha enviado una confirmación al correo electrónico registrado del paciente."
+					})] })]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-sky-50 border border-sky-200 rounded-xl p-4 mb-6 flex items-start gap-3 text-left",
+					role: "status",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Mail, {
+						className: "w-5 h-5 text-sky-600 mt-0.5 shrink-0",
+						"aria-hidden": "true"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm font-medium text-sky-800",
+						children: "Recordatorio programado"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-xs text-sky-700 mt-0.5",
+						children: "El paciente recibirá un recordatorio 24 horas antes de la cita."
+					})] })]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "flex gap-3 justify-center",
@@ -16360,6 +16700,7 @@ function QueueManagement() {
 	const { queue, patients, updateQueueStatus, addEmergency, searchPatients } = useApp();
 	const [showEmergencyModal, setShowEmergencyModal] = (0, import_react.useState)(false);
 	const [emergencySearch, setEmergencySearch] = (0, import_react.useState)("");
+	const emergencyRef = useFocusTrap(showEmergencyModal);
 	const getPatientName = (id) => {
 		const p = patients.find((p) => p.id === id);
 		return p ? `${p.firstName} ${p.lastName}` : "Desconocido";
@@ -16409,7 +16750,14 @@ function QueueManagement() {
 			className: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4",
 			role: "dialog",
 			"aria-label": "Agregar paciente de urgencia",
+			onKeyDown: (e) => {
+				if (e.key === "Escape") {
+					setShowEmergencyModal(false);
+					setEmergencySearch("");
+				}
+			},
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				ref: emergencyRef,
 				className: "bg-white rounded-2xl w-full max-w-md p-6",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
@@ -16542,12 +16890,19 @@ function AdminDashboard() {
 	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
 	const [dateFrom, setDateFrom] = (0, import_react.useState)(today);
 	const [dateTo, setDateTo] = (0, import_react.useState)(today);
+	const [redistributed, setRedistributed] = (0, import_react.useState)(false);
 	const rangeAppts = appointments.filter((a) => a.date >= dateFrom && a.date <= dateTo);
 	const confirmedRange = rangeAppts.filter((a) => a.status === "confirmed").length;
 	const completedRange = rangeAppts.filter((a) => a.status === "completed").length;
 	const cancelledRange = rangeAppts.filter((a) => a.status === "cancelled").length;
 	const waitingNow = queue.filter((q) => q.status === "waiting" || q.status === "emergency").length;
 	const inServiceNow = queue.filter((q) => q.status === "in_service").length;
+	const servedEntries = queue.filter((q) => q.arrivedAt && q.startedAt);
+	const avgWaitMin = servedEntries.length > 0 ? Math.round(servedEntries.reduce((sum, q) => {
+		const [ah, am] = q.arrivedAt.split(":").map(Number);
+		const [sh, sm] = q.startedAt.split(":").map(Number);
+		return sum + (sh * 60 + sm - (ah * 60 + am));
+	}, 0) / servedEntries.length) : null;
 	const rangeStart = /* @__PURE__ */ new Date(dateFrom + "T00:00:00");
 	const rangeEnd = /* @__PURE__ */ new Date(dateTo + "T00:00:00");
 	const rangeDays = Math.round((rangeEnd - rangeStart) / (1e3 * 60 * 60 * 24)) + 1;
@@ -16568,6 +16923,17 @@ function AdminDashboard() {
 		});
 	}
 	const maxDay = Math.max(...dayAppts.map((d) => d.total), 1);
+	const hourlyData = [];
+	for (let h = 7; h <= 18; h++) {
+		const hStr = String(h).padStart(2, "0");
+		const count = rangeAppts.filter((a) => a.time.startsWith(hStr + ":")).length;
+		hourlyData.push({
+			hour: h,
+			label: `${h > 12 ? h - 12 : h}${h >= 12 ? "pm" : "am"}`,
+			count
+		});
+	}
+	const maxHour = Math.max(...hourlyData.map((h) => h.count), 1);
 	const specStats = specialties.map((s) => {
 		const count = rangeAppts.filter((a) => a.specialtyId === s.id).length;
 		return {
@@ -16677,7 +17043,7 @@ function AdminDashboard() {
 			})
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8",
+			className: "grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8",
 			children: [
 				{
 					label: `Citas (${rangeLabel})`,
@@ -16696,6 +17062,12 @@ function AdminDashboard() {
 					value: inServiceNow,
 					icon: Users,
 					color: "text-green-600 bg-green-50"
+				},
+				{
+					label: "Tiempo prom. espera",
+					value: avgWaitMin !== null ? `${avgWaitMin} min` : "—",
+					icon: TriangleAlert,
+					color: "text-orange-600 bg-orange-50"
 				},
 				{
 					label: "Pacientes totales",
@@ -16869,8 +17241,51 @@ function AdminDashboard() {
 				})]
 			})]
 		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "bg-white rounded-2xl border border-gray-200 p-6 mb-8",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
+				className: "text-base font-semibold text-gray-900 mb-4 flex items-center gap-2",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, {
+						className: "w-5 h-5 text-amber-500",
+						"aria-hidden": "true"
+					}),
+					"Distribución por Hora (",
+					rangeLabel,
+					")"
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-end gap-1 h-40",
+				role: "img",
+				"aria-label": `Gráfico de distribución horaria (${rangeLabel})`,
+				children: hourlyData.map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col items-center gap-1 flex-1",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-full flex flex-col items-center justify-end",
+							style: { height: "120px" },
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "w-full max-w-[32px] bg-amber-400 rounded-t-md transition-all",
+								style: {
+									height: `${h.count / maxHour * 100}%`,
+									minHeight: h.count > 0 ? "8px" : "0"
+								}
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-[10px] text-gray-500",
+							children: h.label
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-xs font-medium text-gray-700",
+							children: h.count
+						})
+					]
+				}, h.hour))
+			})]
+		}),
 		doctorLoad.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "bg-white rounded-2xl border border-gray-200 p-6",
+			className: "bg-white rounded-2xl border border-gray-200 p-6 mb-8",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
 				className: "text-base font-semibold text-gray-900 mb-4",
 				children: [
@@ -16880,17 +17295,100 @@ function AdminDashboard() {
 				]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3",
-				children: doctorLoad.map((d) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-sm text-gray-700",
-						children: d.name
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "text-sm font-bold text-sky-600",
-						children: [d.count, " citas"]
-					})]
-				}, d.name))
+				children: doctorLoad.map((d) => {
+					const doc = doctors.find((dr) => dr.name === d.name);
+					const capacity = doc ? doc.schedule.length * rangeDays : 1;
+					const pct = Math.round(d.count / capacity * 100);
+					const color = pct >= 80 ? "text-red-600" : pct >= 50 ? "text-amber-600" : "text-green-600";
+					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "px-4 py-3 bg-gray-50 rounded-xl",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between mb-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-sm text-gray-700",
+									children: d.name
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: `text-sm font-bold ${color}`,
+									children: [pct, "%"]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "w-full bg-gray-200 rounded-full h-1.5",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: `h-1.5 rounded-full ${pct >= 80 ? "bg-red-500" : pct >= 50 ? "bg-amber-400" : "bg-green-500"}`,
+									style: { width: `${Math.min(pct, 100)}%` }
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "text-xs text-gray-500 mt-1",
+								children: [
+									d.count,
+									" / ",
+									capacity,
+									" turnos"
+								]
+							})
+						]
+					}, d.name);
+				})
 			})]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "bg-white rounded-2xl border border-gray-200 p-6",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center justify-between mb-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
+						className: "text-base font-semibold text-gray-900 flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shuffle, {
+							className: "w-5 h-5 text-purple-500",
+							"aria-hidden": "true"
+						}), "Redistribución de Turnos"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+						onClick: () => {
+							setRedistributed(true);
+							setTimeout(() => setRedistributed(false), 5e3);
+						},
+						className: "px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors min-h-[44px] flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shuffle, {
+							className: "w-4 h-4",
+							"aria-hidden": "true"
+						}), "Sugerir redistribución"]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-sm text-gray-600 mb-4",
+					children: "Analiza la carga actual de los médicos y sugiere redistribución de turnos para equilibrar la demanda."
+				}),
+				redistributed && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-purple-50 border border-purple-200 rounded-xl p-4",
+					role: "status",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-sm font-medium text-purple-800 mb-2",
+						children: "Sugerencia de redistribución generada"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+						className: "text-xs text-purple-700 space-y-1.5",
+						children: [
+							doctorLoad.length >= 2 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+								"• Reasignar turnos del ",
+								doctorLoad[0].name,
+								" (",
+								doctorLoad[0].count,
+								" citas) hacia médicos con menor carga"
+							] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+								"• ",
+								doctorLoad[doctorLoad.length - 1].name,
+								" puede recibir turnos adicionales (",
+								doctorLoad[doctorLoad.length - 1].count,
+								" citas actuales)"
+							] })] }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "• Se recomienda revisar horarios de médicos con ocupación superior al 80%" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "• Balancear citas entre especialidades con alta demanda" })
+						]
+					})]
+				})
+			]
 		})
 	] });
 }
