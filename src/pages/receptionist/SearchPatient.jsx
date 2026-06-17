@@ -9,7 +9,20 @@ export default function SearchPatient() {
   const [selected, setSelected] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const [editErrors, setEditErrors] = useState({});
   const [editSuccess, setEditSuccess] = useState(false);
+
+  const validateEdit = () => {
+    const errs = {};
+    if (editForm.phone && !/^\d{9}$/.test(editForm.phone)) errs.phone = 'El teléfono debe tener 9 dígitos';
+    if (editForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.email)) errs.email = 'Ingresa un correo electrónico válido';
+    if (editForm.birthDate) {
+      const bd = new Date(editForm.birthDate + 'T00:00:00');
+      if (bd > new Date()) errs.birthDate = 'La fecha de nacimiento no puede ser futura';
+    }
+    setEditErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const displayedPatients = query.trim() ? searchPatients(query) : patients;
 
@@ -126,15 +139,18 @@ export default function SearchPatient() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                  <input type="tel" value={editForm.phone} onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))} maxLength={9} placeholder="987654321" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                  <input type="tel" value={editForm.phone} onChange={(e) => { setEditForm(prev => ({ ...prev, phone: e.target.value })); setEditErrors(prev => ({ ...prev, phone: undefined })); }} maxLength={9} placeholder="987654321" className={`w-full px-4 py-3 border rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.phone ? 'border-red-400' : 'border-gray-300'}`} aria-invalid={!!editErrors.phone} aria-describedby={editErrors.phone ? 'err-phone' : undefined} />
+                  {editErrors.phone && <p id="err-phone" className="text-xs text-red-600 mt-1" role="alert">{editErrors.phone}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                  <input type="email" value={editForm.email} onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))} placeholder="correo@ejemplo.com" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                  <input type="email" value={editForm.email} onChange={(e) => { setEditForm(prev => ({ ...prev, email: e.target.value })); setEditErrors(prev => ({ ...prev, email: undefined })); }} placeholder="correo@ejemplo.com" className={`w-full px-4 py-3 border rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.email ? 'border-red-400' : 'border-gray-300'}`} aria-invalid={!!editErrors.email} aria-describedby={editErrors.email ? 'err-email' : undefined} />
+                  {editErrors.email && <p id="err-email" className="text-xs text-red-600 mt-1" role="alert">{editErrors.email}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de nacimiento</label>
-                  <input type="date" value={editForm.birthDate} onChange={(e) => setEditForm(prev => ({ ...prev, birthDate: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                  <input type="date" value={editForm.birthDate} onChange={(e) => { setEditForm(prev => ({ ...prev, birthDate: e.target.value })); setEditErrors(prev => ({ ...prev, birthDate: undefined })); }} className={`w-full px-4 py-3 border rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] ${editErrors.birthDate ? 'border-red-400' : 'border-gray-300'}`} aria-invalid={!!editErrors.birthDate} aria-describedby={editErrors.birthDate ? 'err-birth' : undefined} />
+                  {editErrors.birthDate && <p id="err-birth" className="text-xs text-red-600 mt-1" role="alert">{editErrors.birthDate}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
@@ -142,13 +158,13 @@ export default function SearchPatient() {
                 </div>
                 <div className="sm:col-span-2 flex gap-2 mt-2">
                   <button
-                    onClick={() => { updatePatient(selected.id, editForm); setSelected({ ...selected, ...editForm }); setEditing(false); setEditSuccess(true); }}
+                    onClick={() => { if (validateEdit()) { updatePatient(selected.id, editForm); setSelected({ ...selected, ...editForm }); setEditing(false); setEditSuccess(true); } }}
                     className="px-6 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors min-h-[44px]"
                   >
                     Guardar cambios
                   </button>
                   <button
-                    onClick={() => { setEditing(false); setEditSuccess(false); }}
+                    onClick={() => { setEditing(false); setEditSuccess(false); setEditErrors({}); }}
                     className="px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]"
                   >
                     Cancelar
