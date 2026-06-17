@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { BarChart3, Users, Clock, CalendarDays, TrendingUp, AlertTriangle, CheckCircle, XCircle, Filter } from 'lucide-react';
+import { BarChart3, Users, Clock, CalendarDays, TrendingUp, AlertTriangle, CheckCircle, XCircle, Filter, Shuffle } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { currentUser, appointments, patients, queue, doctors, specialties } = useApp();
@@ -8,6 +8,7 @@ export default function AdminDashboard() {
   const today = new Date().toLocaleDateString('sv-SE');
   const [dateFrom, setDateFrom] = useState(today);
   const [dateTo, setDateTo] = useState(today);
+  const [redistributed, setRedistributed] = useState(false);
 
   const rangeAppts = appointments.filter(a => a.date >= dateFrom && a.date <= dateTo);
   const confirmedRange = rangeAppts.filter(a => a.status === 'confirmed').length;
@@ -232,18 +233,62 @@ export default function AdminDashboard() {
       </div>
 
       {doctorLoad.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Carga por Médico ({rangeLabel})</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {doctorLoad.map(d => (
-              <div key={d.name} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
-                <span className="text-sm text-gray-700">{d.name}</span>
-                <span className="text-sm font-bold text-sky-600">{d.count} citas</span>
-              </div>
-            ))}
+            {doctorLoad.map(d => {
+              const doc = doctors.find(dr => dr.name === d.name);
+              const capacity = doc ? doc.schedule.length * rangeDays : 1;
+              const pct = Math.round((d.count / capacity) * 100);
+              const color = pct >= 80 ? 'text-red-600' : pct >= 50 ? 'text-amber-600' : 'text-green-600';
+              return (
+                <div key={d.name} className="px-4 py-3 bg-gray-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-700">{d.name}</span>
+                    <span className={`text-sm font-bold ${color}`}>{pct}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div className={`h-1.5 rounded-full ${pct >= 80 ? 'bg-red-500' : pct >= 50 ? 'bg-amber-400' : 'bg-green-500'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{d.count} / {capacity} turnos</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
+
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <Shuffle className="w-5 h-5 text-purple-500" aria-hidden="true" />
+            Redistribución de Turnos
+          </h2>
+          <button
+            onClick={() => { setRedistributed(true); setTimeout(() => setRedistributed(false), 5000); }}
+            className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors min-h-[44px] flex items-center gap-2"
+          >
+            <Shuffle className="w-4 h-4" aria-hidden="true" />
+            Sugerir redistribución
+          </button>
+        </div>
+        <p className="text-sm text-gray-600 mb-4">Analiza la carga actual de los médicos y sugiere redistribución de turnos para equilibrar la demanda.</p>
+        {redistributed && (
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-4" role="status">
+            <p className="text-sm font-medium text-purple-800 mb-2">Sugerencia de redistribución generada</p>
+            <ul className="text-xs text-purple-700 space-y-1.5">
+              {doctorLoad.length >= 2 && (
+                <>
+                  <li>• Reasignar turnos del {doctorLoad[0].name} ({doctorLoad[0].count} citas) hacia médicos con menor carga</li>
+                  <li>• {doctorLoad[doctorLoad.length - 1].name} puede recibir turnos adicionales ({doctorLoad[doctorLoad.length - 1].count} citas actuales)</li>
+                </>
+              )}
+              <li>• Se recomienda revisar horarios de médicos con ocupación superior al 80%</li>
+              <li>• Balancear citas entre especialidades con alta demanda</li>
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
