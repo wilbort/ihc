@@ -12567,7 +12567,7 @@ var users = [
 * LICENSE file in the root directory of this source tree.
 */
 var require_react_jsx_runtime_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element");
+	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
 	function jsxProd(type, config, maybeKey) {
 		var key = null;
 		void 0 !== maybeKey && (key = "" + maybeKey);
@@ -12585,6 +12585,7 @@ var require_react_jsx_runtime_production = /* @__PURE__ */ __commonJSMin(((expor
 			props: maybeKey
 		};
 	}
+	exports.Fragment = REACT_FRAGMENT_TYPE;
 	exports.jsx = jsxProd;
 	exports.jsxs = jsxProd;
 }));
@@ -14914,30 +14915,15 @@ function RegisterPatient() {
 //#endregion
 //#region src/pages/receptionist/SearchPatient.jsx
 function SearchPatient() {
-	const { searchPatients, getPatientAppointments, updatePatient, doctors, specialties } = useApp();
+	const { patients, searchPatients, getPatientAppointments, updatePatient, doctors, specialties } = useApp();
 	const [query, setQuery] = (0, import_react.useState)("");
-	const [results, setResults] = (0, import_react.useState)([]);
-	const [searched, setSearched] = (0, import_react.useState)(false);
 	const [selected, setSelected] = (0, import_react.useState)(null);
 	const [editing, setEditing] = (0, import_react.useState)(false);
 	const [editForm, setEditForm] = (0, import_react.useState)({});
 	const [editSuccess, setEditSuccess] = (0, import_react.useState)(false);
+	const displayedPatients = query.trim() ? searchPatients(query) : patients;
 	const handleSearch = (e) => {
 		e.preventDefault();
-		if (!query.trim()) return;
-		setResults(searchPatients(query));
-		setSearched(true);
-		setSelected(null);
-	};
-	const handleInputChange = (val) => {
-		setQuery(val);
-		if (val.length >= 2) {
-			setResults(searchPatients(val));
-			setSearched(true);
-		} else if (val.length === 0) {
-			setResults([]);
-			setSearched(false);
-		}
 	};
 	const getDoctorName = (id) => doctors.find((d) => d.id === id)?.name || "";
 	const getSpecialtyName = (id) => specialties.find((s) => s.id === id)?.name || "";
@@ -14958,7 +14944,7 @@ function SearchPatient() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("form", {
 				onSubmit: handleSearch,
-				className: "mb-6",
+				className: "mb-4",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "relative",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, {
@@ -14967,14 +14953,27 @@ function SearchPatient() {
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 						type: "text",
 						value: query,
-						onChange: (e) => handleInputChange(e.target.value),
-						placeholder: "Ingrese DNI o nombre del paciente...",
+						onChange: (e) => setQuery(e.target.value),
+						placeholder: "Filtrar por DNI o nombre del paciente...",
 						className: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] text-lg",
-						"aria-label": "Buscar paciente por DNI o nombre"
+						"aria-label": "Filtrar pacientes por DNI o nombre"
 					})]
 				})
 			}),
-			searched && !selected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: results.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			!selected && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-center justify-between mb-3",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-sm text-gray-500 flex items-center gap-1.5",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, {
+						className: "w-4 h-4",
+						"aria-hidden": "true"
+					}), query.trim() ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+						displayedPatients.length,
+						" resultado",
+						displayedPatients.length !== 1 ? "s" : ""
+					] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [patients.length, " pacientes registrados"] })]
+				})
+			}), displayedPatients.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "text-center py-8 bg-white rounded-2xl border border-gray-200",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, {
@@ -14991,8 +14990,8 @@ function SearchPatient() {
 					})
 				]
 			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100",
-				children: results.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+				className: "bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 max-h-[480px] overflow-y-auto",
+				children: displayedPatients.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 					onClick: () => setSelected(p),
 					className: "w-full flex items-center justify-between px-6 py-4 hover:bg-sky-50 transition-colors text-left min-h-[44px]",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -15019,7 +15018,7 @@ function SearchPatient() {
 						children: "Ver detalle →"
 					})]
 				}, p.id))
-			}) }),
+			})] }),
 			selected && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 					onClick: () => setSelected(null),

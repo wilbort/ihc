@@ -1,35 +1,20 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Search, User, Calendar, Phone, Mail, Edit3, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, User, Calendar, Phone, Mail, Edit3, CheckCircle, AlertCircle, Users } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
 
 export default function SearchPatient() {
-  const { searchPatients, getPatientAppointments, updatePatient, doctors, specialties } = useApp();
+  const { patients, searchPatients, getPatientAppointments, updatePatient, doctors, specialties } = useApp();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [editSuccess, setEditSuccess] = useState(false);
 
+  const displayedPatients = query.trim() ? searchPatients(query) : patients;
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    setResults(searchPatients(query));
-    setSearched(true);
-    setSelected(null);
-  };
-
-  const handleInputChange = (val) => {
-    setQuery(val);
-    if (val.length >= 2) {
-      setResults(searchPatients(val));
-      setSearched(true);
-    } else if (val.length === 0) {
-      setResults([]);
-      setSearched(false);
-    }
   };
 
   const getDoctorName = (id) => doctors.find(d => d.id === id)?.name || '';
@@ -45,31 +30,41 @@ export default function SearchPatient() {
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Buscar Paciente</h1>
       <p className="text-gray-600 mb-8">Busca por DNI o nombre para acceder a la información del paciente.</p>
 
-      <form onSubmit={handleSearch} className="mb-6">
+      <form onSubmit={handleSearch} className="mb-4">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
           <input
             type="text"
             value={query}
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Ingrese DNI o nombre del paciente..."
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filtrar por DNI o nombre del paciente..."
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] text-lg"
-            aria-label="Buscar paciente por DNI o nombre"
+            aria-label="Filtrar pacientes por DNI o nombre"
           />
         </div>
       </form>
 
-      {searched && !selected && (
+      {!selected && (
         <div>
-          {results.length === 0 ? (
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-500 flex items-center gap-1.5">
+              <Users className="w-4 h-4" aria-hidden="true" />
+              {query.trim()
+                ? <>{displayedPatients.length} resultado{displayedPatients.length !== 1 ? 's' : ''}</>
+                : <>{patients.length} pacientes registrados</>
+              }
+            </p>
+          </div>
+
+          {displayedPatients.length === 0 ? (
             <div className="text-center py-8 bg-white rounded-2xl border border-gray-200">
               <User className="w-12 h-12 text-gray-300 mx-auto mb-3" aria-hidden="true" />
               <p className="text-gray-600 font-medium">No se encontraron pacientes</p>
               <p className="text-sm text-gray-500 mt-1">Verifica el DNI o nombre ingresado.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
-              {results.map(p => (
+            <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 max-h-[480px] overflow-y-auto">
+              {displayedPatients.map(p => (
                 <button
                   key={p.id}
                   onClick={() => setSelected(p)}

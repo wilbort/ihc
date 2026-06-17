@@ -643,6 +643,10 @@
     max-height: calc(var(--spacing) * 48);
   }
 
+  .max-h-\[480px\] {
+    max-height: 480px;
+  }
+
   .min-h-\[32px\] {
     min-height: 32px;
   }
@@ -814,6 +818,10 @@
 
   .gap-1 {
     gap: calc(var(--spacing) * 1);
+  }
+
+  .gap-1\.5 {
+    gap: calc(var(--spacing) * 1.5);
   }
 
   .gap-2 {
