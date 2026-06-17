@@ -9,6 +9,7 @@ export default function MyAppointments() {
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
   const [cancelError, setCancelError] = useState(null);
+  const [confirmCancelId, setConfirmCancelId] = useState(null);
 
   const canCancelAppt = (appt) => {
     const now = new Date();
@@ -24,7 +25,12 @@ export default function MyAppointments() {
       setTimeout(() => setCancelError(null), 4000);
       return;
     }
-    cancelAppointment(appt.id);
+    setConfirmCancelId(appt.id);
+  };
+
+  const executeCancel = () => {
+    cancelAppointment(confirmCancelId);
+    setConfirmCancelId(null);
   };
 
   const today = new Date().toLocaleDateString('sv-SE');
@@ -165,6 +171,31 @@ export default function MyAppointments() {
               )}
             </div>
           ))}
+        </div>
+      )}
+      {confirmCancelId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Confirmar cancelación">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 text-center">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-6 h-6 text-red-600" aria-hidden="true" />
+            </div>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">¿Cancelar esta cita?</h2>
+            <p className="text-sm text-gray-600 mb-6">Esta acción no se puede deshacer. El horario quedará libre para otros pacientes.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmCancelId(null)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]"
+              >
+                No, mantener
+              </button>
+              <button
+                onClick={executeCancel}
+                className="flex-1 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 min-h-[44px]"
+              >
+                Sí, cancelar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
