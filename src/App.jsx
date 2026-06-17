@@ -10,6 +10,8 @@ import ReceptionistDashboard from './pages/receptionist/Dashboard';
 import RegisterPatient from './pages/receptionist/RegisterPatient';
 import SearchPatient from './pages/receptionist/SearchPatient';
 import Appointments from './pages/receptionist/Appointments';
+import ReceptionistNewAppointment from './pages/receptionist/NewAppointment';
+import DoctorAvailability from './pages/receptionist/DoctorAvailability';
 import QueueManagement from './pages/receptionist/QueueManagement';
 import AdminDashboard from './pages/admin/Dashboard';
 
@@ -39,6 +41,8 @@ function AppRoutes() {
         <Route path="register" element={<RegisterPatient />} />
         <Route path="search" element={<SearchPatient />} />
         <Route path="appointments" element={<Appointments />} />
+        <Route path="new-appointment" element={<ReceptionistNewAppointment />} />
+        <Route path="availability" element={<DoctorAvailability />} />
         <Route path="queue" element={<QueueManagement />} />
       </Route>
 

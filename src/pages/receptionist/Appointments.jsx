@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CalendarDays, Search, CheckCircle, Clock, XCircle, UserCheck, AlertCircle } from 'lucide-react';
+import { CalendarDays, Search, CheckCircle, Clock, XCircle, UserCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
 
 const TOLERANCE_MINUTES = 15;
 
 export default function Appointments() {
-  const { appointments, patients, doctors, specialties, addToQueue, cancelAppointment } = useApp();
+  const { appointments, patients, doctors, specialties, addToQueue, cancelAppointment, rescheduleAppointment, getAvailableSlots } = useApp();
   const [filter, setFilter] = useState('today');
   const [searchDni, setSearchDni] = useState('');
   const [lateWarning, setLateWarning] = useState(null);
   const [cancelWarning, setCancelWarning] = useState(null);
+  const [rescheduleId, setRescheduleId] = useState(null);
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
 
   const today = new Date().toLocaleDateString('sv-SE');
   const getPatient = (id) => patients.find(p => p.id === id);
@@ -57,6 +60,22 @@ export default function Appointments() {
       return;
     }
     cancelAppointment(appt.id);
+  };
+
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 30);
+  const maxDateStr = maxDate.toLocaleDateString('sv-SE');
+
+  const rescheduleAppt = rescheduleId ? appointments.find(a => a.id === rescheduleId) : null;
+  const rescheduleSlots = rescheduleAppt && newDate ? getAvailableSlots(rescheduleAppt.doctorId, newDate) : [];
+
+  const handleReschedule = () => {
+    if (newDate && newTime) {
+      rescheduleAppointment(rescheduleId, newDate, newTime);
+      setRescheduleId(null);
+      setNewDate('');
+      setNewTime('');
+    }
   };
 
   return (
@@ -133,7 +152,7 @@ export default function Appointments() {
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${badge.class}`}>{badge.label}</span>
                       </td>
                       <td className="px-5 py-3">
-                        {appt.status === 'confirmed' && appt.date === today && (
+                        {appt.status === 'confirmed' && appt.date >= today && (
                           <div>
                             {lateWarning === appt.id && (
                               <div className="flex items-center gap-1 mb-2 p-2 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
@@ -148,13 +167,23 @@ export default function Appointments() {
                               </div>
                             )}
                             <div className="flex gap-1">
+                              {appt.date === today && (
+                                <button
+                                  onClick={() => handleCheckIn(appt)}
+                                  className="px-3 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 min-h-[36px] flex items-center gap-1 font-medium"
+                                  title="Registrar llegada"
+                                >
+                                  <UserCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                                  Check-in
+                                </button>
+                              )}
                               <button
-                                onClick={() => handleCheckIn(appt)}
-                                className="px-3 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 min-h-[36px] flex items-center gap-1 font-medium"
-                                title="Registrar llegada"
+                                onClick={() => { setRescheduleId(appt.id); setNewDate(''); setNewTime(''); }}
+                                className="px-3 py-1.5 text-xs text-sky-600 rounded-lg hover:bg-sky-50 min-h-[36px] flex items-center gap-1 font-medium"
+                                title="Reprogramar cita"
                               >
-                                <UserCheck className="w-3.5 h-3.5" aria-hidden="true" />
-                                Check-in
+                                <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
+                                Reprogramar
                               </button>
                               <button
                                 onClick={() => handleCancelReceptionist(appt)}
@@ -172,6 +201,70 @@ export default function Appointments() {
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {rescheduleId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Reprogramar cita">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-sky-500" aria-hidden="true" />
+              Reprogramar Cita
+            </h2>
+            {rescheduleAppt && (
+              <p className="text-sm text-gray-500 mb-4">
+                {getPatient(rescheduleAppt.patientId)?.firstName} {getPatient(rescheduleAppt.patientId)?.lastName} — {getSpecialtyName(rescheduleAppt.specialtyId)}
+              </p>
+            )}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nueva fecha</label>
+              <input
+                type="date"
+                min={today}
+                max={maxDateStr}
+                value={newDate}
+                onChange={(e) => { setNewDate(e.target.value); setNewTime(''); }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]"
+                aria-label="Nueva fecha para la cita"
+              />
+            </div>
+            {newDate && rescheduleSlots.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Horarios disponibles</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {rescheduleSlots.map(slot => (
+                    <button
+                      key={slot}
+                      onClick={() => setNewTime(slot)}
+                      className={`py-2 rounded-lg border text-xs font-medium min-h-[44px] ${
+                        newTime === slot ? 'border-sky-500 bg-sky-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-sky-300'
+                      }`}
+                    >
+                      {fmt12(slot)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {newDate && rescheduleSlots.length === 0 && (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg mb-4">No hay horarios disponibles para esta fecha.</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={handleReschedule}
+                disabled={!newDate || !newTime}
+                className="flex-1 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+              >
+                Confirmar cambio
+              </button>
+              <button
+                onClick={() => { setRescheduleId(null); setNewDate(''); setNewTime(''); }}
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}
