@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { Search, User, CalendarPlus, CheckCircle, ChevronRight } from 'lucide-react';
+import { Search, User, CalendarPlus, CheckCircle, ChevronRight, Bell, Mail } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
 
 export default function NewAppointment() {
@@ -50,6 +50,20 @@ export default function NewAppointment() {
             <div className="flex justify-between"><span className="text-gray-500">Médico</span><span className="font-medium text-gray-900">{doc?.name}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Fecha</span><span className="font-medium text-gray-900">{new Date(date + 'T00:00:00').toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Hora</span><span className="font-medium text-gray-900">{fmt12(time)}</span></div>
+          </div>
+        </div>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4 flex items-start gap-3 text-left" role="status">
+          <Bell className="w-5 h-5 text-green-600 mt-0.5 shrink-0" aria-hidden="true" />
+          <div>
+            <p className="text-sm font-medium text-green-800">Notificación enviada al paciente</p>
+            <p className="text-xs text-green-700 mt-0.5">Se ha enviado una confirmación al correo electrónico registrado del paciente.</p>
+          </div>
+        </div>
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-6 flex items-start gap-3 text-left" role="status">
+          <Mail className="w-5 h-5 text-sky-600 mt-0.5 shrink-0" aria-hidden="true" />
+          <div>
+            <p className="text-sm font-medium text-sky-800">Recordatorio programado</p>
+            <p className="text-xs text-sky-700 mt-0.5">El paciente recibirá un recordatorio 24 horas antes de la cita.</p>
           </div>
         </div>
         <div className="flex gap-3 justify-center">
