@@ -35,6 +35,14 @@ export default function AdminDashboard() {
   }
   const maxDay = Math.max(...dayAppts.map(d => d.total), 1);
 
+  const hourlyData = [];
+  for (let h = 7; h <= 18; h++) {
+    const hStr = String(h).padStart(2, '0');
+    const count = rangeAppts.filter(a => a.time.startsWith(hStr + ':')).length;
+    hourlyData.push({ hour: h, label: `${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}`, count });
+  }
+  const maxHour = Math.max(...hourlyData.map(h => h.count), 1);
+
   const specStats = specialties.map(s => {
     const count = rangeAppts.filter(a => a.specialtyId === s.id).length;
     return { name: s.name, count };
@@ -189,6 +197,27 @@ export default function AdminDashboard() {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+        <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-amber-500" aria-hidden="true" />
+          Distribución por Hora ({rangeLabel})
+        </h2>
+        <div className="flex items-end gap-1 h-40" role="img" aria-label={`Gráfico de distribución horaria (${rangeLabel})`}>
+          {hourlyData.map((h) => (
+            <div key={h.hour} className="flex flex-col items-center gap-1 flex-1">
+              <div className="w-full flex flex-col items-center justify-end" style={{ height: '120px' }}>
+                <div
+                  className="w-full max-w-[32px] bg-amber-400 rounded-t-md transition-all"
+                  style={{ height: `${(h.count / maxHour) * 100}%`, minHeight: h.count > 0 ? '8px' : '0' }}
+                />
+              </div>
+              <span className="text-[10px] text-gray-500">{h.label}</span>
+              <span className="text-xs font-medium text-gray-700">{h.count}</span>
+            </div>
+          ))}
         </div>
       </div>
 
