@@ -16,6 +16,15 @@ export default function AdminDashboard() {
   const waitingNow = queue.filter(q => q.status === 'waiting' || q.status === 'emergency').length;
   const inServiceNow = queue.filter(q => q.status === 'in_service').length;
 
+  const servedEntries = queue.filter(q => q.arrivedAt && q.startedAt);
+  const avgWaitMin = servedEntries.length > 0
+    ? Math.round(servedEntries.reduce((sum, q) => {
+        const [ah, am] = q.arrivedAt.split(':').map(Number);
+        const [sh, sm] = q.startedAt.split(':').map(Number);
+        return sum + ((sh * 60 + sm) - (ah * 60 + am));
+      }, 0) / servedEntries.length)
+    : null;
+
   const rangeStart = new Date(dateFrom + 'T00:00:00');
   const rangeEnd = new Date(dateTo + 'T00:00:00');
   const rangeDays = Math.round((rangeEnd - rangeStart) / (1000 * 60 * 60 * 24)) + 1;
@@ -106,11 +115,12 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {[
           { label: `Citas (${rangeLabel})`, value: rangeAppts.length, icon: CalendarDays, color: 'text-sky-600 bg-sky-50' },
           { label: 'En espera ahora', value: waitingNow, icon: Clock, color: 'text-amber-600 bg-amber-50' },
           { label: 'En atención ahora', value: inServiceNow, icon: Users, color: 'text-green-600 bg-green-50' },
+          { label: 'Tiempo prom. espera', value: avgWaitMin !== null ? `${avgWaitMin} min` : '—', icon: AlertTriangle, color: 'text-orange-600 bg-orange-50' },
           { label: 'Pacientes totales', value: patients.length, icon: TrendingUp, color: 'text-purple-600 bg-purple-50' },
         ].map(item => (
           <div key={item.label} className="bg-white rounded-2xl border border-gray-200 p-5">

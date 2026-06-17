@@ -78,7 +78,15 @@ export function AppProvider({ children }) {
   }, [queue, nextQueueId]);
 
   const updateQueueStatus = useCallback((id, status) => {
-    setQueue(prev => prev.map(q => q.id === id ? { ...q, status } : q));
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    setQueue(prev => prev.map(q => {
+      if (q.id !== id) return q;
+      const updates = { status };
+      if (status === 'in_service') updates.startedAt = timeStr;
+      if (status === 'completed') updates.completedAt = timeStr;
+      return { ...q, ...updates };
+    }));
     if (status === 'completed') {
       const entry = queue.find(q => q.id === id);
       if (entry) completeAppointment(entry.appointmentId);
