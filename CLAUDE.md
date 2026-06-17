@@ -7,6 +7,7 @@ Proyecto académico para el curso de Interacción Humano-Computador (IHC) de la 
 
 - Usar siempre **Bash** para comandos de terminal. No usar PowerShell.
 - Los mensajes de commit deben ser **breves, de una sola línea**.
+- Consultar siempre `requerimientos.md` (en la raíz del proyecto) como fuente de verdad para reglas del negocio, requisitos funcionales/no funcionales, métricas UX, user personas, user scenarios, user stories, impact mapping y requisitos de accesibilidad. No leer el Word original.
 
 ## Stack tecnológico
 
@@ -36,24 +37,26 @@ src/
 ├── App.jsx                           # HashRouter + rutas protegidas por rol
 ├── context/AppContext.jsx            # Estado global (pacientes, citas, cola, auth)
 ├── data/mockData.js                  # Datos iniciales (usuarios, pacientes, doctores, citas)
-├── components/Layout.jsx             # Navbar compartido con navegación por rol
+├── hooks/useFocusTrap.js             # Hook reutilizable de focus trap para modales
+├── utils/formatTime.js               # fmt12() — formato 12h para horarios
+├── components/Layout.jsx             # Navbar con dropdowns, keyboard nav, skip-to-content
 └── pages/
     ├── Login.jsx                     # Login + acceso rápido demo
     ├── patient/
     │   ├── Dashboard.jsx             # Portal del paciente
-    │   ├── NewAppointment.jsx        # Agendar cita (wizard 4 pasos)
-    │   ├── MyAppointments.jsx        # Ver/cancelar/reprogramar citas
+    │   ├── NewAppointment.jsx        # Agendar cita (wizard 3 pasos) + notificación simulada
+    │   ├── MyAppointments.jsx        # Ver/cancelar/reprogramar citas + modal confirmación + focus trap
     │   └── History.jsx               # Historial de citas pasadas
     ├── receptionist/
     │   ├── Dashboard.jsx             # Panel de admisión con estadísticas
     │   ├── RegisterPatient.jsx       # Registro de nuevo paciente
-    │   ├── SearchPatient.jsx         # Buscar + ver + editar paciente
-    │   ├── NewAppointment.jsx        # Agendar cita (wizard: paciente + especialidad + médico + fecha)
+    │   ├── SearchPatient.jsx         # Buscar + ver + editar paciente (validación inline con errores específicos)
+    │   ├── NewAppointment.jsx        # Agendar cita (wizard 4 pasos) + notificación simulada
     │   ├── DoctorAvailability.jsx    # Consulta de disponibilidad de médicos por especialidad
-    │   ├── Appointments.jsx          # Gestión de citas (check-in, reprogramar, cancelar)
-    │   └── QueueManagement.jsx       # Cola de atención (llamar, atender)
+    │   ├── Appointments.jsx          # Gestión de citas (check-in, reprogramar, cancelar) + modales con focus trap
+    │   └── QueueManagement.jsx       # Cola de atención kanban + modal urgencia con focus trap
     └── admin/
-        └── Dashboard.jsx             # Dashboard con métricas y gráfico semanal
+        └── Dashboard.jsx             # Dashboard: métricas, gráfico diario, distribución horaria, carga médica con %, redistribución de turnos
 ```
 
 ## Usuarios demo
@@ -113,11 +116,21 @@ src/
 
 ## Accesibilidad (WCAG 2.0 AA)
 
-- `aria-label` en todos los inputs y botones de acción
-- `role="alert"` y `role="status"` en mensajes de retroalimentación
+- `aria-label`, `aria-expanded`, `aria-haspopup`, `aria-invalid` en inputs y botones
+- `role="dialog"`, `role="alert"`, `role="status"`, `role="menu"`, `role="menuitem"` semánticos
 - Contraste mínimo 4.5:1 en texto sobre fondo
 - Targets mínimos de 44x44px (`min-h-[44px]`)
-- Navegación por teclado funcional
+- Navegación por teclado en dropdowns (Enter, Escape, ArrowUp, ArrowDown)
+- Focus trap en todos los modales (hook `useFocusTrap`)
+- Skip-to-content link en Layout.jsx (`#main-content`)
+- Cierre de modales con Escape
+
+## Microinteracciones y animaciones
+
+- `fadeIn` — contenido principal al cambiar de vista
+- `scaleIn` — modales al abrirse
+- `slideUp` — alertas y mensajes de estado
+- Transiciones suaves en botones, links e inputs (`transition: all 0.15s`)
 
 ## Fechas y zona horaria
 
