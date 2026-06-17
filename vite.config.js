@@ -7,5 +7,7 @@ export default defineConfig({
   base: '/ihc/',
   build: {
     outDir: 'docs',
+    minify: false,
+    cssMinify: false,
   },
 })

@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { CalendarPlus, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 export default function PatientDashboard() {
   const { currentUser, getPatientAppointments, doctors, specialties } = useApp();
   const patientId = currentUser?.patientId;
 
   const allAppts = getPatientAppointments(patientId);
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE');
   const upcoming = allAppts
     .filter(a => a.date >= today && a.status === 'confirmed')
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
@@ -42,7 +43,7 @@ export default function PatientDashboard() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" aria-hidden="true" />
-                  {nextAppt.time} hrs
+                  {fmt12(nextAppt.time)}
                 </span>
               </div>
             </div>
@@ -100,7 +101,7 @@ export default function PatientDashboard() {
                 </div>
                 <div className="text-right text-sm">
                   <p className="text-gray-900">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
-                  <p className="text-gray-500">{appt.time} hrs</p>
+                  <p className="text-gray-500">{fmt12(appt.time)}</p>
                 </div>
               </div>
             ))}

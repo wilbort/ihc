@@ -1,5 +1,6 @@
 import { useApp } from '../../context/AppContext';
 import { Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 const statusConfig = {
   completed: { label: 'Atendida', color: 'bg-green-50 text-green-700', icon: CheckCircle },
@@ -8,7 +9,7 @@ const statusConfig = {
 
 export default function History() {
   const { currentUser, getPatientAppointments, doctors, specialties } = useApp();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE');
 
   const past = getPatientAppointments(currentUser?.patientId)
     .filter(a => a.status === 'completed' || a.status === 'cancelled' || a.date < today)
@@ -48,7 +49,7 @@ export default function History() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <Clock className="w-4 h-4" aria-hidden="true" />
-                    {appt.time} hrs
+                    {fmt12(appt.time)}
                   </div>
                   <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-full ${cfg.color}`}>
                     {cfg.label}

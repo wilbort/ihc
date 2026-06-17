@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Users, UserPlus, Search, CalendarDays, ListOrdered, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 export default function ReceptionistDashboard() {
   const { currentUser, getTodayStats, queue, patients } = useApp();
@@ -74,7 +75,7 @@ export default function ReceptionistDashboard() {
                   {q.status === 'emergency' && <AlertTriangle className="w-5 h-5 text-red-500" aria-label="Emergencia" />}
                   <div>
                     <p className="font-medium text-gray-900 text-sm">{getPatientName(q.patientId)}</p>
-                    <p className="text-xs text-gray-500">Llegó: {q.arrivedAt}</p>
+                    <p className="text-xs text-gray-500">Llegó: {fmt12(q.arrivedAt)}</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 text-xs rounded-full font-medium ${
@@ -99,7 +100,7 @@ export default function ReceptionistDashboard() {
               <div key={q.id} className="flex items-center justify-between px-5 py-3">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{getPatientName(q.patientId)}</p>
-                  <p className="text-xs text-gray-500">Llegó: {q.arrivedAt}</p>
+                  <p className="text-xs text-gray-500">Llegó: {fmt12(q.arrivedAt)}</p>
                 </div>
                 <span className="px-2 py-1 text-xs rounded-full font-medium bg-green-50 text-green-700">
                   En atención

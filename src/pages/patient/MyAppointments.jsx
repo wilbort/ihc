@@ -1,14 +1,33 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Calendar, Clock, X, RefreshCw } from 'lucide-react';
+import { Calendar, Clock, X, RefreshCw, AlertCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 export default function MyAppointments() {
   const { currentUser, getPatientAppointments, cancelAppointment, rescheduleAppointment, doctors, specialties, getAvailableSlots } = useApp();
   const [rescheduleId, setRescheduleId] = useState(null);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
+  const [cancelError, setCancelError] = useState(null);
 
-  const today = new Date().toISOString().split('T')[0];
+  const canCancelAppt = (appt) => {
+    const now = new Date();
+    const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
+    const diffMs = apptDateTime - now;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    return diffHours >= 2;
+  };
+
+  const handleCancel = (appt) => {
+    if (!canCancelAppt(appt)) {
+      setCancelError(appt.id);
+      setTimeout(() => setCancelError(null), 4000);
+      return;
+    }
+    cancelAppointment(appt.id);
+  };
+
+  const today = new Date().toLocaleDateString('sv-SE');
   const allAppts = getPatientAppointments(currentUser?.patientId);
   const upcoming = allAppts
     .filter(a => a.date >= today && a.status === 'confirmed')
@@ -19,7 +38,7 @@ export default function MyAppointments() {
 
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() + 30);
-  const maxDateStr = maxDate.toISOString().split('T')[0];
+  const maxDateStr = maxDate.toLocaleDateString('sv-SE');
 
   const handleReschedule = (apptId) => {
     if (newDate && newTime) {
@@ -66,7 +85,7 @@ export default function MyAppointments() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" aria-hidden="true" />
-                  {appt.time} hrs
+                  {fmt12(appt.time)}
                 </span>
               </div>
 
@@ -94,7 +113,7 @@ export default function MyAppointments() {
                             newTime === slot ? 'border-sky-500 bg-sky-600 text-white' : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-sky-300'
                           }`}
                         >
-                          {slot}
+                          {fmt12(slot)}
                         </button>
                       ))}
                     </div>
@@ -119,21 +138,29 @@ export default function MyAppointments() {
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-2 border-t border-gray-100 pt-4">
-                  <button
-                    onClick={() => setRescheduleId(appt.id)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-sky-600 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px]"
-                  >
-                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                    Reprogramar
-                  </button>
-                  <button
-                    onClick={() => cancelAppointment(appt.id)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px]"
-                  >
-                    <X className="w-4 h-4" aria-hidden="true" />
-                    Cancelar cita
-                  </button>
+                <div className="border-t border-gray-100 pt-4">
+                  {cancelError === appt.id && (
+                    <div className="flex items-center gap-2 p-3 mb-3 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" aria-hidden="true" />
+                      <span className="text-xs text-amber-800 font-medium">No se puede cancelar con menos de 2 horas de anticipación. La cancelación queda registrada como inasistencia.</span>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setRescheduleId(appt.id)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-sky-600 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px]"
+                    >
+                      <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                      Reprogramar
+                    </button>
+                    <button
+                      onClick={() => handleCancel(appt)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px]"
+                    >
+                      <X className="w-4 h-4" aria-hidden="true" />
+                      Cancelar cita
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

@@ -104,7 +104,7 @@ export function AppProvider({ children }) {
   }, [appointments]);
 
   const getTodayStats = useCallback(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('sv-SE');
     const todayAppts = appointments.filter(a => a.date === today);
     return {
       total: todayAppts.length,

@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Search, User, Calendar, Phone, Mail } from 'lucide-react';
+import { Search, User, Calendar, Phone, Mail, Edit3, CheckCircle, AlertCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 export default function SearchPatient() {
-  const { searchPatients, getPatientAppointments, doctors, specialties } = useApp();
+  const { searchPatients, getPatientAppointments, updatePatient, doctors, specialties } = useApp();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [editSuccess, setEditSuccess] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -30,7 +34,7 @@ export default function SearchPatient() {
 
   const getDoctorName = (id) => doctors.find(d => d.id === id)?.name || '';
   const getSpecialtyName = (id) => specialties.find(s => s.id === id)?.name || '';
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE');
 
   const patientAppts = selected ? getPatientAppointments(selected.id) : [];
   const upcomingAppts = patientAppts.filter(a => a.date >= today && a.status === 'confirmed');
@@ -94,31 +98,84 @@ export default function SearchPatient() {
             ← Volver a resultados
           </button>
 
+          {editSuccess && (
+            <div className="flex items-center gap-3 p-4 mb-4 bg-green-50 border border-green-200 rounded-xl" role="status">
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0" aria-hidden="true" />
+              <span className="text-sm text-green-800 font-medium">Datos del paciente actualizados correctamente.</span>
+            </div>
+          )}
+
           <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 bg-sky-100 rounded-full flex items-center justify-center">
-                <User className="w-7 h-7 text-sky-600" aria-hidden="true" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-sky-100 rounded-full flex items-center justify-center">
+                  <User className="w-7 h-7 text-sky-600" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selected.firstName} {selected.lastName}</h2>
+                  <p className="text-gray-500">DNI: {selected.dni}</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">{selected.firstName} {selected.lastName}</h2>
-                <p className="text-gray-500">DNI: {selected.dni}</p>
-              </div>
+              {!editing && (
+                <button
+                  onClick={() => { setEditing(true); setEditForm({ phone: selected.phone || '', email: selected.email || '', address: selected.address || '', birthDate: selected.birthDate || '' }); setEditSuccess(false); }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-sky-600 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px] font-medium"
+                >
+                  <Edit3 className="w-4 h-4" aria-hidden="true" />
+                  Editar datos
+                </button>
+              )}
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Phone className="w-4 h-4" aria-hidden="true" /> {selected.phone || 'No registrado'}
+            {editing ? (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                  <input type="tel" value={editForm.phone} onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))} maxLength={9} placeholder="987654321" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                  <input type="email" value={editForm.email} onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))} placeholder="correo@ejemplo.com" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de nacimiento</label>
+                  <input type="date" value={editForm.birthDate} onChange={(e) => setEditForm(prev => ({ ...prev, birthDate: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                  <input type="text" value={editForm.address} onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))} placeholder="Dirección del paciente" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]" />
+                </div>
+                <div className="sm:col-span-2 flex gap-2 mt-2">
+                  <button
+                    onClick={() => { updatePatient(selected.id, editForm); setSelected({ ...selected, ...editForm }); setEditing(false); setEditSuccess(true); }}
+                    className="px-6 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors min-h-[44px]"
+                  >
+                    Guardar cambios
+                  </button>
+                  <button
+                    onClick={() => { setEditing(false); setEditSuccess(false); }}
+                    className="px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg min-h-[44px]"
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail className="w-4 h-4" aria-hidden="true" /> {selected.email || 'No registrado'}
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Phone className="w-4 h-4" aria-hidden="true" /> {selected.phone || 'No registrado'}
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Mail className="w-4 h-4" aria-hidden="true" /> {selected.email || 'No registrado'}
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="w-4 h-4" aria-hidden="true" /> {selected.birthDate ? new Date(selected.birthDate + 'T00:00:00').toLocaleDateString('es-PE') : 'No registrado'}
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <User className="w-4 h-4" aria-hidden="true" /> {selected.gender === 'M' ? 'Masculino' : selected.gender === 'F' ? 'Femenino' : 'No registrado'}
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Calendar className="w-4 h-4" aria-hidden="true" /> {selected.birthDate ? new Date(selected.birthDate + 'T00:00:00').toLocaleDateString('es-PE') : 'No registrado'}
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <User className="w-4 h-4" aria-hidden="true" /> {selected.gender === 'M' ? 'Masculino' : selected.gender === 'F' ? 'Femenino' : 'No registrado'}
-              </div>
-            </div>
+            )}
           </div>
 
           {upcomingAppts.length > 0 && (
@@ -133,7 +190,7 @@ export default function SearchPatient() {
                     </div>
                     <div className="text-right text-sm">
                       <p className="text-gray-700">{new Date(a.date + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
-                      <p className="text-gray-500">{a.time} hrs</p>
+                      <p className="text-gray-500">{fmt12(a.time)}</p>
                     </div>
                   </div>
                 ))}

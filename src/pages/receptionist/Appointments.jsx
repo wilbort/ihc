@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CalendarDays, Search, CheckCircle, Clock, XCircle, UserCheck } from 'lucide-react';
+import { CalendarDays, Search, CheckCircle, Clock, XCircle, UserCheck, AlertCircle } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
+
+const TOLERANCE_MINUTES = 15;
 
 export default function Appointments() {
   const { appointments, patients, doctors, specialties, addToQueue, cancelAppointment } = useApp();
   const [filter, setFilter] = useState('today');
   const [searchDni, setSearchDni] = useState('');
+  const [lateWarning, setLateWarning] = useState(null);
+  const [cancelWarning, setCancelWarning] = useState(null);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE');
   const getPatient = (id) => patients.find(p => p.id === id);
   const getDoctorName = (id) => doctors.find(d => d.id === id)?.name || '';
   const getSpecialtyName = (id) => specialties.find(s => s.id === id)?.name || '';
@@ -31,7 +36,27 @@ export default function Appointments() {
   };
 
   const handleCheckIn = (appt) => {
+    const now = new Date();
+    const apptTime = new Date(`${appt.date}T${appt.time}:00`);
+    const diffMin = (now - apptTime) / (1000 * 60);
+    if (diffMin > TOLERANCE_MINUTES) {
+      setLateWarning(appt.id);
+      setTimeout(() => setLateWarning(null), 5000);
+      return;
+    }
     addToQueue(appt.patientId, appt.id);
+  };
+
+  const handleCancelReceptionist = (appt) => {
+    const now = new Date();
+    const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
+    const diffHours = (apptDateTime - now) / (1000 * 60 * 60);
+    if (diffHours < 2) {
+      setCancelWarning(appt.id);
+      setTimeout(() => setCancelWarning(null), 5000);
+      return;
+    }
+    cancelAppointment(appt.id);
   };
 
   return (
@@ -103,28 +128,42 @@ export default function Appointments() {
                       <td className="px-5 py-3 text-gray-700">{getSpecialtyName(appt.specialtyId)}</td>
                       <td className="px-5 py-3 text-gray-700">{getDoctorName(appt.doctorId)}</td>
                       <td className="px-5 py-3 text-gray-700">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</td>
-                      <td className="px-5 py-3 text-gray-700">{appt.time}</td>
+                      <td className="px-5 py-3 text-gray-700">{fmt12(appt.time)}</td>
                       <td className="px-5 py-3">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${badge.class}`}>{badge.label}</span>
                       </td>
                       <td className="px-5 py-3">
                         {appt.status === 'confirmed' && appt.date === today && (
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => handleCheckIn(appt)}
-                              className="px-3 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 min-h-[36px] flex items-center gap-1 font-medium"
-                              title="Registrar llegada"
-                            >
-                              <UserCheck className="w-3.5 h-3.5" aria-hidden="true" />
-                              Check-in
-                            </button>
-                            <button
-                              onClick={() => cancelAppointment(appt.id)}
-                              className="px-3 py-1.5 text-xs text-red-600 rounded-lg hover:bg-red-50 min-h-[36px]"
-                              title="Cancelar cita"
-                            >
-                              <XCircle className="w-3.5 h-3.5" aria-hidden="true" />
-                            </button>
+                          <div>
+                            {lateWarning === appt.id && (
+                              <div className="flex items-center gap-1 mb-2 p-2 bg-amber-50 border border-amber-200 rounded-lg" role="alert">
+                                <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" aria-hidden="true" />
+                                <span className="text-xs text-amber-800">Paciente fuera del tiempo de tolerancia ({TOLERANCE_MINUTES} min). Debe reprogramar.</span>
+                              </div>
+                            )}
+                            {cancelWarning === appt.id && (
+                              <div className="flex items-center gap-1 mb-2 p-2 bg-red-50 border border-red-200 rounded-lg" role="alert">
+                                <AlertCircle className="w-3.5 h-3.5 text-red-600 shrink-0" aria-hidden="true" />
+                                <span className="text-xs text-red-800">No se puede cancelar con menos de 2 horas de anticipación.</span>
+                              </div>
+                            )}
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleCheckIn(appt)}
+                                className="px-3 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 min-h-[36px] flex items-center gap-1 font-medium"
+                                title="Registrar llegada"
+                              >
+                                <UserCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                                Check-in
+                              </button>
+                              <button
+                                onClick={() => handleCancelReceptionist(appt)}
+                                className="px-3 py-1.5 text-xs text-red-600 rounded-lg hover:bg-red-50 min-h-[36px]"
+                                title="Cancelar cita"
+                              >
+                                <XCircle className="w-3.5 h-3.5" aria-hidden="true" />
+                              </button>
+                            </div>
                           </div>
                         )}
                       </td>

@@ -56,13 +56,19 @@ export const initialPatients = [
 ];
 
 const today = new Date();
-const fmt = (d) => d.toISOString().split('T')[0];
+const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+
+const nowH = today.getHours();
+const soonTime = nowH < 21 ? `${String(nowH + 1).padStart(2, '0')}:00` : '10:00';
+const pastTime = nowH > 8 ? `${String(nowH - 2).padStart(2, '0')}:00` : '07:00';
 
 export const initialAppointments = [
   { id: 1, patientId: 1, doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 2)), time: '10:00', status: 'confirmed', type: 'control' },
   { id: 2, patientId: 2, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '09:00', status: 'confirmed', type: 'consulta' },
   { id: 3, patientId: 3, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 3)), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 8, patientId: 1, doctorId: 6, specialtyId: 5, date: fmt(today), time: soonTime, status: 'confirmed', type: 'consulta' },
+  { id: 9, patientId: 2, doctorId: 3, specialtyId: 2, date: fmt(today), time: pastTime, status: 'confirmed', type: 'consulta' },
   { id: 4, patientId: 1, doctorId: 1, specialtyId: 1, date: fmt(addDays(today, -7)), time: '10:00', status: 'completed', type: 'control' },
   { id: 5, patientId: 1, doctorId: 2, specialtyId: 1, date: fmt(addDays(today, -30)), time: '15:00', status: 'completed', type: 'control' },
   { id: 6, patientId: 2, doctorId: 6, specialtyId: 5, date: fmt(addDays(today, -14)), time: '08:00', status: 'completed', type: 'consulta' },

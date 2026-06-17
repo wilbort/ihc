@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { CalendarPlus, CheckCircle, ChevronRight } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 export default function NewAppointment() {
   const { currentUser, specialties, doctors, getAvailableSlots, addAppointment } = useApp();
@@ -15,10 +16,10 @@ export default function NewAppointment() {
 
   const filteredDoctors = doctors.filter(d => d.specialtyId === specialtyId);
   const availableSlots = doctorId && date ? getAvailableSlots(doctorId, date) : [];
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE');
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() + 30);
-  const maxDateStr = maxDate.toISOString().split('T')[0];
+  const maxDateStr = maxDate.toLocaleDateString('sv-SE');
 
   const handleConfirm = () => {
     addAppointment({
@@ -47,7 +48,7 @@ export default function NewAppointment() {
             <div className="flex justify-between"><span className="text-gray-500">Especialidad</span><span className="font-medium text-gray-900">{spec?.name}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Médico</span><span className="font-medium text-gray-900">{doc?.name}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Fecha</span><span className="font-medium text-gray-900">{new Date(date + 'T00:00:00').toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Hora</span><span className="font-medium text-gray-900">{time} hrs</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Hora</span><span className="font-medium text-gray-900">{fmt12(time)}</span></div>
           </div>
         </div>
         <p className="text-sm text-gray-500 mb-6">Recuerda presentarte con anticipación a tu cita.</p>
@@ -151,7 +152,7 @@ export default function NewAppointment() {
                         time === slot ? 'border-sky-500 bg-sky-600 text-white' : 'border-gray-200 bg-white text-gray-900 hover:border-sky-300'
                       }`}
                     >
-                      {slot}
+                      {fmt12(slot)}
                     </button>
                   ))}
                 </div>

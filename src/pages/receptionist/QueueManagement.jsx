@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Clock, User, Play, CheckCircle, AlertTriangle, Plus, Search } from 'lucide-react';
+import { fmt12 } from '../../utils/formatTime';
 
 const columnConfig = {
   emergency: { title: 'Urgencias', color: 'border-red-300 bg-red-50', badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
@@ -132,7 +133,7 @@ export default function QueueManagement() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500 flex items-center gap-1">
-                        <Clock className="w-3 h-3" aria-hidden="true" /> {q.arrivedAt}
+                        <Clock className="w-3 h-3" aria-hidden="true" /> {fmt12(q.arrivedAt)}
                       </span>
                       {nextStatus[key] && (
                         <button
