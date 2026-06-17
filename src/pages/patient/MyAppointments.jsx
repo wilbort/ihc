@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Calendar, Clock, X, RefreshCw, AlertCircle } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 export default function MyAppointments() {
   const { currentUser, getPatientAppointments, cancelAppointment, rescheduleAppointment, doctors, specialties, getAvailableSlots } = useApp();
@@ -10,6 +11,7 @@ export default function MyAppointments() {
   const [newTime, setNewTime] = useState('');
   const [cancelError, setCancelError] = useState(null);
   const [confirmCancelId, setConfirmCancelId] = useState(null);
+  const cancelRef = useFocusTrap(!!confirmCancelId);
 
   const canCancelAppt = (appt) => {
     const now = new Date();
@@ -174,8 +176,8 @@ export default function MyAppointments() {
         </div>
       )}
       {confirmCancelId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Confirmar cancelación">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-6 text-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Confirmar cancelación" onKeyDown={(e) => { if (e.key === 'Escape') setConfirmCancelId(null); }}>
+          <div ref={cancelRef} className="bg-white rounded-2xl w-full max-w-sm p-6 text-center">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-6 h-6 text-red-600" aria-hidden="true" />
             </div>

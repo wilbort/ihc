@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CalendarDays, Search, CheckCircle, Clock, XCircle, UserCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 const TOLERANCE_MINUTES = 15;
 
@@ -15,6 +16,8 @@ export default function Appointments() {
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
   const [confirmCancelId, setConfirmCancelId] = useState(null);
+  const rescheduleRef = useFocusTrap(!!rescheduleId);
+  const cancelRef = useFocusTrap(!!confirmCancelId);
 
   const today = new Date().toLocaleDateString('sv-SE');
   const getPatient = (id) => patients.find(p => p.id === id);
@@ -212,8 +215,8 @@ export default function Appointments() {
       )}
 
       {rescheduleId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Reprogramar cita">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Reprogramar cita" onKeyDown={(e) => { if (e.key === 'Escape') { setRescheduleId(null); setNewDate(''); setNewTime(''); } }}>
+          <div ref={rescheduleRef} className="bg-white rounded-2xl w-full max-w-md p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-sky-500" aria-hidden="true" />
               Reprogramar Cita
@@ -276,8 +279,8 @@ export default function Appointments() {
       )}
 
       {confirmCancelId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Confirmar cancelación">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-6 text-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Confirmar cancelación" onKeyDown={(e) => { if (e.key === 'Escape') setConfirmCancelId(null); }}>
+          <div ref={cancelRef} className="bg-white rounded-2xl w-full max-w-sm p-6 text-center">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-6 h-6 text-red-600" aria-hidden="true" />
             </div>

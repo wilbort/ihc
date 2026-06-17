@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Clock, User, Play, CheckCircle, AlertTriangle, Plus, Search } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
+import useFocusTrap from '../../hooks/useFocusTrap';
 
 const columnConfig = {
   emergency: { title: 'Urgencias', color: 'border-red-300 bg-red-50', badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
@@ -14,6 +15,7 @@ export default function QueueManagement() {
   const { queue, patients, updateQueueStatus, addEmergency, searchPatients } = useApp();
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [emergencySearch, setEmergencySearch] = useState('');
+  const emergencyRef = useFocusTrap(showEmergencyModal);
 
   const getPatientName = (id) => {
     const p = patients.find(p => p.id === id);
@@ -56,8 +58,8 @@ export default function QueueManagement() {
       </div>
 
       {showEmergencyModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Agregar paciente de urgencia">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-label="Agregar paciente de urgencia" onKeyDown={(e) => { if (e.key === 'Escape') { setShowEmergencyModal(false); setEmergencySearch(''); } }}>
+          <div ref={emergencyRef} className="bg-white rounded-2xl w-full max-w-md p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-500" aria-hidden="true" />
               Turno de Urgencia
