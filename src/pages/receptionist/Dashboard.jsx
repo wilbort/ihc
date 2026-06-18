@@ -22,18 +22,23 @@ export default function ReceptionistDashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Citas hoy', value: stats.total, icon: CalendarDays, color: 'bg-sky-50 text-sky-600' },
-          { label: 'En espera', value: stats.inQueue, icon: Clock, color: 'bg-amber-50 text-amber-600' },
-          { label: 'En atención', value: stats.attending, icon: Users, color: 'bg-green-50 text-green-600' },
-          { label: 'Atendidos', value: stats.completed, icon: CheckCircle, color: 'bg-purple-50 text-purple-600' },
+          { label: 'Citas hoy', value: stats.total, icon: CalendarDays, color: 'bg-sky-50 text-sky-600', to: '/receptionist/appointments' },
+          { label: 'En espera', value: stats.inQueue, icon: Clock, color: 'bg-amber-50 text-amber-600', to: '/receptionist/queue' },
+          { label: 'En atención', value: stats.attending, icon: Users, color: 'bg-green-50 text-green-600', to: '/receptionist/queue' },
+          { label: 'Atendidos', value: stats.completed, icon: CheckCircle, color: 'bg-purple-50 text-purple-600', to: '/receptionist/queue' },
         ].map(item => (
-          <div key={item.label} className="bg-white rounded-2xl border border-gray-200 p-5">
+          <Link
+            key={item.label}
+            to={item.to}
+            className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-sky-300 hover:shadow-md transition-all block group"
+            aria-label={`Ver ${item.label}`}
+          >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${item.color}`}>
               <item.icon className="w-5 h-5" aria-hidden="true" />
             </div>
             <p className="text-2xl font-bold text-gray-900">{item.value}</p>
-            <p className="text-sm text-gray-500">{item.label}</p>
-          </div>
+            <p className="text-sm text-gray-500 group-hover:text-sky-600 transition-colors">{item.label} →</p>
+          </Link>
         ))}
       </div>
 

@@ -92,18 +92,26 @@ export default function PatientDashboard() {
       {upcoming.length > 1 && (
         <div className="mt-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Citas próximas</h2>
-          <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
+          <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
             {upcoming.slice(0, 5).map(appt => (
-              <div key={appt.id} className="flex items-center justify-between px-6 py-4">
+              <Link
+                key={appt.id}
+                to="/patient/my-appointments"
+                className="flex items-center justify-between px-6 py-4 hover:bg-sky-50 transition-colors min-h-[44px]"
+                aria-label={`Gestionar cita de ${getSpecialtyName(appt.specialtyId)} con ${getDoctorName(appt.doctorId)}`}
+              >
                 <div>
                   <p className="font-medium text-gray-900">{getSpecialtyName(appt.specialtyId)}</p>
                   <p className="text-sm text-gray-500">{getDoctorName(appt.doctorId)}</p>
                 </div>
-                <div className="text-right text-sm">
-                  <p className="text-gray-900">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
-                  <p className="text-gray-500">{fmt12(appt.time)}</p>
+                <div className="flex items-center gap-3">
+                  <div className="text-right text-sm">
+                    <p className="text-gray-900">{new Date(appt.date + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
+                    <p className="text-gray-500">{fmt12(appt.time)}</p>
+                  </div>
+                  <span className="text-sky-600 text-sm">→</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

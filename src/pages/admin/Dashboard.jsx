@@ -6,7 +6,8 @@ export default function AdminDashboard() {
   const { currentUser, appointments, patients, queue, doctors, specialties } = useApp();
 
   const today = new Date().toLocaleDateString('sv-SE');
-  const [dateFrom, setDateFrom] = useState(today);
+  const sevenDaysAgo = (() => { const d = new Date(); d.setDate(d.getDate() - 6); return d.toLocaleDateString('sv-SE'); })();
+  const [dateFrom, setDateFrom] = useState(sevenDaysAgo);
   const [dateTo, setDateTo] = useState(today);
   const [redistributed, setRedistributed] = useState(false);
 

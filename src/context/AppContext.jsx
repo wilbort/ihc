@@ -93,6 +93,23 @@ export function AppProvider({ children }) {
     }
   }, [queue, completeAppointment]);
 
+  const revertQueueStatus = useCallback((id) => {
+    const reverseMap = { completed: 'in_service', in_service: 'waiting' };
+    setQueue(prev => prev.map(q => {
+      if (q.id !== id) return q;
+      const prevStatus = reverseMap[q.status];
+      if (!prevStatus) return q;
+      const updates = { status: prevStatus };
+      if (q.status === 'completed') updates.completedAt = undefined;
+      if (q.status === 'in_service') updates.startedAt = undefined;
+      return { ...q, ...updates };
+    }));
+    const entry = queue.find(q => q.id === id);
+    if (entry && entry.status === 'completed' && entry.appointmentId) {
+      setAppointments(prev => prev.map(a => a.id === entry.appointmentId ? { ...a, status: 'confirmed' } : a));
+    }
+  }, [queue]);
+
   const addEmergency = useCallback((patientId) => {
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -128,7 +145,7 @@ export function AppProvider({ children }) {
     currentUser, login, logout,
     patients, addPatient, updatePatient, findPatientByDni, searchPatients,
     appointments, addAppointment, cancelAppointment, rescheduleAppointment, completeAppointment, getPatientAppointments,
-    queue, addToQueue, updateQueueStatus, addEmergency,
+    queue, addToQueue, updateQueueStatus, revertQueueStatus, addEmergency,
     doctors, specialties,
     getAvailableSlots, getTodayStats,
   };

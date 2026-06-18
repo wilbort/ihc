@@ -45,18 +45,16 @@ export const initialPatients = [
 const today = new Date();
 const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
-
-const nowH = today.getHours();
-const soonTime = nowH < 21 ? `${String(nowH + 1).padStart(2, '0')}:00` : '16:00';
-const pastTime = nowH > 8  ? `${String(nowH - 2).padStart(2, '0')}:00` : '14:00';
+const relTime = (minutesAgo) => {
+  const d = new Date(); d.setMinutes(d.getMinutes() - minutesAgo);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
 
 export const initialAppointments = [
   // ── HISTORIAL DE ELISA (paciente demo) ──
   { id: 1,  patientId: 1,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 3)),   time: '10:00', status: 'confirmed',  type: 'control'  },
   { id: 4,  patientId: 1,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, -7)),  time: '10:00', status: 'completed',  type: 'control'  },
   { id: 5,  patientId: 1,  doctorId: 2, specialtyId: 1, date: fmt(addDays(today, -30)), time: '15:00', status: 'completed',  type: 'control'  },
-  { id: 8,  patientId: 1,  doctorId: 6, specialtyId: 5, date: fmt(today),               time: soonTime, status: 'confirmed', type: 'consulta' },
-
   // ── MAÑANA ──
   { id: 2,  patientId: 2,  doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)),   time: '09:00', status: 'confirmed',  type: 'consulta' },
   { id: 14, patientId: 8,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 1)),   time: '09:00', status: 'confirmed',  type: 'consulta' },
@@ -66,6 +64,38 @@ export const initialAppointments = [
   { id: 51, patientId: 16, doctorId: 6, specialtyId: 5, date: fmt(addDays(today, 1)),   time: '16:00', status: 'confirmed',  type: 'control'  },
   { id: 52, patientId: 18, doctorId: 8, specialtyId: 7, date: fmt(addDays(today, 1)),   time: '15:00', status: 'confirmed',  type: 'consulta' },
   { id: 53, patientId: 20, doctorId: 2, specialtyId: 1, date: fmt(addDays(today, 1)),   time: '17:00', status: 'confirmed',  type: 'control'  },
+  // Más mañana para que se vea cargado
+  { id: 110, patientId: 3,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 1)), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 111, patientId: 5,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'control'  },
+  { id: 112, patientId: 6,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 1)), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 113, patientId: 7,  doctorId: 1, specialtyId: 1, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'consulta' },
+  { id: 114, patientId: 9,  doctorId: 2, specialtyId: 1, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 115, patientId: 11, doctorId: 2, specialtyId: 1, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'control'  },
+  { id: 116, patientId: 12, doctorId: 2, specialtyId: 1, date: fmt(addDays(today, 1)), time: '16:00', status: 'confirmed', type: 'consulta' },
+  { id: 117, patientId: 13, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '07:00', status: 'confirmed', type: 'consulta' },
+  { id: 118, patientId: 14, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 119, patientId: 15, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '11:00', status: 'confirmed', type: 'consulta' },
+  { id: 120, patientId: 17, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '14:00', status: 'confirmed', type: 'control'  },
+  { id: 121, patientId: 18, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'consulta' },
+  { id: 122, patientId: 19, doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 1)), time: '16:00', status: 'confirmed', type: 'consulta' },
+  { id: 123, patientId: 4,  doctorId: 4, specialtyId: 3, date: fmt(addDays(today, 1)), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 124, patientId: 6,  doctorId: 4, specialtyId: 3, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 125, patientId: 8,  doctorId: 4, specialtyId: 3, date: fmt(addDays(today, 1)), time: '11:00', status: 'confirmed', type: 'control'  },
+  { id: 126, patientId: 10, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 1)), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 127, patientId: 12, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 128, patientId: 14, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 1)), time: '14:00', status: 'confirmed', type: 'control'  },
+  { id: 129, patientId: 16, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'consulta' },
+  { id: 130, patientId: 17, doctorId: 6, specialtyId: 5, date: fmt(addDays(today, 1)), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 131, patientId: 18, doctorId: 6, specialtyId: 5, date: fmt(addDays(today, 1)), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 132, patientId: 20, doctorId: 6, specialtyId: 5, date: fmt(addDays(today, 1)), time: '14:00', status: 'confirmed', type: 'control'  },
+  { id: 133, patientId: 3,  doctorId: 6, specialtyId: 5, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'consulta' },
+  { id: 134, patientId: 5,  doctorId: 7, specialtyId: 6, date: fmt(addDays(today, 1)), time: '07:00', status: 'confirmed', type: 'consulta' },
+  { id: 135, patientId: 7,  doctorId: 7, specialtyId: 6, date: fmt(addDays(today, 1)), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 136, patientId: 9,  doctorId: 7, specialtyId: 6, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'control'  },
+  { id: 137, patientId: 11, doctorId: 7, specialtyId: 6, date: fmt(addDays(today, 1)), time: '15:00', status: 'confirmed', type: 'consulta' },
+  { id: 138, patientId: 13, doctorId: 8, specialtyId: 7, date: fmt(addDays(today, 1)), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 139, patientId: 15, doctorId: 8, specialtyId: 7, date: fmt(addDays(today, 1)), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 140, patientId: 19, doctorId: 8, specialtyId: 7, date: fmt(addDays(today, 1)), time: '14:00', status: 'confirmed', type: 'control'  },
 
   // ── PASADO MAÑANA ──
   { id: 3,  patientId: 3,  doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 2)),   time: '14:00', status: 'confirmed',  type: 'consulta' },
@@ -81,40 +111,63 @@ export const initialAppointments = [
   { id: 58, patientId: 6,  doctorId: 3, specialtyId: 2, date: fmt(addDays(today, 3)),   time: '10:00', status: 'confirmed',  type: 'consulta' },
   { id: 59, patientId: 20, doctorId: 5, specialtyId: 4, date: fmt(addDays(today, 3)),   time: '15:00', status: 'confirmed',  type: 'consulta' },
 
-  // ── HOY MAÑANA (pasado) ──
-  { id: 9,  patientId: 2,  doctorId: 3, specialtyId: 2, date: fmt(today),               time: pastTime, status: 'confirmed', type: 'consulta' },
-  { id: 10, patientId: 4,  doctorId: 7, specialtyId: 6, date: fmt(today),               time: '09:00', status: 'confirmed',  type: 'consulta' },
-  { id: 11, patientId: 5,  doctorId: 5, specialtyId: 4, date: fmt(today),               time: '10:00', status: 'confirmed',  type: 'consulta' },
-  { id: 12, patientId: 6,  doctorId: 6, specialtyId: 5, date: fmt(today),               time: '11:00', status: 'confirmed',  type: 'control'  },
-  { id: 13, patientId: 7,  doctorId: 3, specialtyId: 2, date: fmt(today),               time: '08:00', status: 'confirmed',  type: 'consulta' },
+  // ══════════════════════════════════════════════════════════════
+  // ── CITAS DE HOY — distribución balanceada
+  // Cada médico tiene exactamente 3 turnos libres
+  // ══════════════════════════════════════════════════════════════
 
-  // ── HOY TARDE — BLOQUE 15:00 ──
-  { id: 30, patientId: 14, doctorId: 1, specialtyId: 1, date: fmt(today), time: '15:00', status: 'confirmed', type: 'consulta' },
-  { id: 31, patientId: 15, doctorId: 4, specialtyId: 3, date: fmt(today), time: '15:00', status: 'confirmed', type: 'consulta' },
-  { id: 32, patientId: 16, doctorId: 5, specialtyId: 4, date: fmt(today), time: '15:00', status: 'confirmed', type: 'control'  },
-  { id: 33, patientId: 17, doctorId: 7, specialtyId: 6, date: fmt(today), time: '15:00', status: 'confirmed', type: 'consulta' },
-  { id: 34, patientId: 18, doctorId: 8, specialtyId: 7, date: fmt(today), time: '15:00', status: 'confirmed', type: 'consulta' },
-  { id: 35, patientId: 19, doctorId: 2, specialtyId: 1, date: fmt(today), time: '15:00', status: 'confirmed', type: 'control'  },
+  // Dr. Carlos Mendoza (Oncología) — 5 ocupados / 3 libres (09, 11, 15)
+  { id: 200, patientId: 1,  doctorId: 1, specialtyId: 1, date: fmt(today), time: '08:00', status: 'completed', type: 'control'  },
+  { id: 201, patientId: 4,  doctorId: 1, specialtyId: 1, date: fmt(today), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 202, patientId: 15, doctorId: 1, specialtyId: 1, date: fmt(today), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 203, patientId: 18, doctorId: 1, specialtyId: 1, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
+  { id: 204, patientId: 20, doctorId: 1, specialtyId: 1, date: fmt(today), time: '17:00', status: 'confirmed', type: 'control'  },
 
-  // ── HOY TARDE — BLOQUE 16:00 ──
-  { id: 36, patientId: 20, doctorId: 1, specialtyId: 1, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
-  { id: 37, patientId: 8,  doctorId: 5, specialtyId: 4, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
-  { id: 38, patientId: 9,  doctorId: 7, specialtyId: 6, date: fmt(today), time: '16:00', status: 'confirmed', type: 'control'  },
-  { id: 39, patientId: 10, doctorId: 2, specialtyId: 1, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
-  { id: 40, patientId: 11, doctorId: 8, specialtyId: 7, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
-  { id: 41, patientId: 3,  doctorId: 4, specialtyId: 3, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
+  // Dra. María Torres (Oncología) — 4 ocupados / 3 libres (10, 16, 18)
+  { id: 205, patientId: 7,  doctorId: 2, specialtyId: 1, date: fmt(today), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 206, patientId: 12, doctorId: 2, specialtyId: 1, date: fmt(today), time: '11:00', status: 'confirmed', type: 'consulta' },
+  { id: 207, patientId: 19, doctorId: 2, specialtyId: 1, date: fmt(today), time: '15:00', status: 'confirmed', type: 'control'  },
+  { id: 208, patientId: 3,  doctorId: 2, specialtyId: 1, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
 
-  // ── HOY TARDE — BLOQUE 17:00 ──
-  { id: 42, patientId: 12, doctorId: 2, specialtyId: 1, date: fmt(today), time: '17:00', status: 'confirmed', type: 'control'  },
-  { id: 43, patientId: 13, doctorId: 5, specialtyId: 4, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
-  { id: 44, patientId: 14, doctorId: 8, specialtyId: 7, date: fmt(today), time: '17:00', status: 'confirmed', type: 'control'  },
-  { id: 45, patientId: 15, doctorId: 1, specialtyId: 1, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
-  { id: 46, patientId: 16, doctorId: 7, specialtyId: 6, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
+  // Dr. José García (Medicina General) — 6 ocupados / 3 libres (09, 15, 17)
+  { id: 209, patientId: 2,  doctorId: 3, specialtyId: 2, date: fmt(today), time: '07:00', status: 'completed', type: 'consulta' },
+  { id: 210, patientId: 5,  doctorId: 3, specialtyId: 2, date: fmt(today), time: '08:00', status: 'completed', type: 'consulta' },
+  { id: 211, patientId: 13, doctorId: 3, specialtyId: 2, date: fmt(today), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 212, patientId: 17, doctorId: 3, specialtyId: 2, date: fmt(today), time: '11:00', status: 'confirmed', type: 'control'  },
+  { id: 213, patientId: 16, doctorId: 3, specialtyId: 2, date: fmt(today), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 214, patientId: 8,  doctorId: 3, specialtyId: 2, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
 
-  // ── HOY TARDE — BLOQUE 18:00 ──
-  { id: 47, patientId: 17, doctorId: 2, specialtyId: 1, date: fmt(today), time: '18:00', status: 'confirmed', type: 'consulta' },
-  { id: 48, patientId: 18, doctorId: 1, specialtyId: 1, date: fmt(today), time: '17:00', status: 'confirmed', type: 'control'  },
-  { id: 49, patientId: 19, doctorId: 8, specialtyId: 7, date: fmt(today), time: '18:00', status: 'confirmed', type: 'consulta' },
+  // Dra. Ana López (Pediatría) — 4 ocupados / 3 libres (09, 14, 16)
+  { id: 215, patientId: 9,  doctorId: 4, specialtyId: 3, date: fmt(today), time: '08:00', status: 'completed', type: 'consulta' },
+  { id: 216, patientId: 14, doctorId: 4, specialtyId: 3, date: fmt(today), time: '10:00', status: 'confirmed', type: 'consulta' },
+  { id: 217, patientId: 3,  doctorId: 4, specialtyId: 3, date: fmt(today), time: '11:00', status: 'confirmed', type: 'consulta' },
+  { id: 218, patientId: 10, doctorId: 4, specialtyId: 3, date: fmt(today), time: '15:00', status: 'confirmed', type: 'consulta' },
+
+  // Dra. Rosa Chávez (Ginecología) — 4 ocupados / 3 libres (10, 15, 17)
+  { id: 219, patientId: 6,  doctorId: 5, specialtyId: 4, date: fmt(today), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 220, patientId: 20, doctorId: 5, specialtyId: 4, date: fmt(today), time: '11:00', status: 'confirmed', type: 'control'  },
+  { id: 221, patientId: 5,  doctorId: 5, specialtyId: 4, date: fmt(today), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 222, patientId: 11, doctorId: 5, specialtyId: 4, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
+
+  // Dr. Luis Paredes (Cardiología) — 5 ocupados / 3 libres (10, 15, 17)
+  { id: 223, patientId: 8,  doctorId: 6, specialtyId: 5, date: fmt(today), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 224, patientId: 12, doctorId: 6, specialtyId: 5, date: fmt(today), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 225, patientId: 6,  doctorId: 6, specialtyId: 5, date: fmt(today), time: '14:00', status: 'confirmed', type: 'control'  },
+  { id: 226, patientId: 1,  doctorId: 6, specialtyId: 5, date: fmt(today), time: '18:00', status: 'confirmed', type: 'consulta' },
+  { id: 227, patientId: 13, doctorId: 6, specialtyId: 5, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
+
+  // Dr. Ricardo Vega (Traumatología) — 4 ocupados / 3 libres (08, 10, 16)
+  { id: 228, patientId: 17, doctorId: 7, specialtyId: 6, date: fmt(today), time: '07:00', status: 'confirmed', type: 'consulta' },
+  { id: 229, patientId: 4,  doctorId: 7, specialtyId: 6, date: fmt(today), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 230, patientId: 9,  doctorId: 7, specialtyId: 6, date: fmt(today), time: '15:00', status: 'confirmed', type: 'control'  },
+  { id: 231, patientId: 14, doctorId: 7, specialtyId: 6, date: fmt(today), time: '17:00', status: 'confirmed', type: 'consulta' },
+
+  // Dr. Fernando Ruiz (Cirugía General) — 5 ocupados / 3 libres (10, 15, 17)
+  { id: 232, patientId: 19, doctorId: 8, specialtyId: 7, date: fmt(today), time: '08:00', status: 'confirmed', type: 'consulta' },
+  { id: 233, patientId: 11, doctorId: 8, specialtyId: 7, date: fmt(today), time: '09:00', status: 'confirmed', type: 'consulta' },
+  { id: 234, patientId: 18, doctorId: 8, specialtyId: 7, date: fmt(today), time: '11:00', status: 'confirmed', type: 'control'  },
+  { id: 235, patientId: 7,  doctorId: 8, specialtyId: 7, date: fmt(today), time: '14:00', status: 'confirmed', type: 'consulta' },
+  { id: 236, patientId: 10, doctorId: 8, specialtyId: 7, date: fmt(today), time: '16:00', status: 'confirmed', type: 'consulta' },
 
   // ── HISTORIAL (completadas y canceladas) ──
   { id: 6,  patientId: 2,  doctorId: 6, specialtyId: 5, date: fmt(addDays(today, -14)), time: '08:00', status: 'completed', type: 'consulta' },
@@ -143,21 +196,21 @@ export const initialAppointments = [
 ];
 
 export const initialQueue = [
-  // En atención ahora
-  { id: 1, patientId: 14, appointmentId: 30, status: 'in_service', arrivedAt: '14:52', startedAt: '15:05', position: 1 },
-  { id: 2, patientId: 15, appointmentId: 31, status: 'in_service', arrivedAt: '14:58', startedAt: '15:08', position: 2 },
+  // En atención ahora — startedAt reciente (dentro de 15 min, SE PUEDE deshacer)
+  { id: 1, patientId: 19, appointmentId: 207, status: 'in_service', arrivedAt: relTime(25), startedAt: relTime(8),  position: 1 },
+  { id: 2, patientId: 10, appointmentId: 218, status: 'in_service', arrivedAt: relTime(20), startedAt: relTime(5),  position: 2 },
   // En espera
-  { id: 3, patientId: 16, appointmentId: 32, status: 'waiting', arrivedAt: '15:05', position: 3 },
-  { id: 4, patientId: 17, appointmentId: 33, status: 'waiting', arrivedAt: '15:12', position: 4 },
-  { id: 5, patientId: 18, appointmentId: 34, status: 'waiting', arrivedAt: '15:18', position: 5 },
-  { id: 6, patientId: 19, appointmentId: 35, status: 'waiting', arrivedAt: '15:22', position: 6 },
-  // Urgencia
-  { id: 7, patientId: 20, appointmentId: null, status: 'emergency', arrivedAt: '15:40', position: 0 },
-  // Atendidos (historial del día)
-  { id: 8,  patientId: 7,  appointmentId: 13, status: 'completed', arrivedAt: '07:50', startedAt: '08:05', completedAt: '08:30', position: 8  },
-  { id: 9,  patientId: 4,  appointmentId: 10, status: 'completed', arrivedAt: '08:45', startedAt: '09:10', completedAt: '09:40', position: 9  },
-  { id: 10, patientId: 5,  appointmentId: 11, status: 'completed', arrivedAt: '09:40', startedAt: '10:05', completedAt: '10:35', position: 10 },
-  { id: 11, patientId: 6,  appointmentId: 12, status: 'completed', arrivedAt: '10:50', startedAt: '11:10', completedAt: '11:45', position: 11 },
+  { id: 3, patientId: 9,  appointmentId: 230, status: 'waiting',    arrivedAt: relTime(18), position: 3 },
+  { id: 4, patientId: 18, appointmentId: 203, status: 'waiting',    arrivedAt: relTime(12), position: 4 },
+  { id: 5, patientId: 8,  appointmentId: 214, status: 'waiting',    arrivedAt: relTime(8),  position: 5 },
+  { id: 6, patientId: 11, appointmentId: 222, status: 'waiting',    arrivedAt: relTime(5),  position: 6 },
+  // Urgencia recién llegada
+  { id: 7, patientId: 20, appointmentId: null, status: 'emergency', arrivedAt: relTime(3),  position: 0 },
+  // Atendidos: 2 recientes (SE PUEDE deshacer) + 2 antiguos (YA NO se puede)
+  { id: 8,  patientId: 9,  appointmentId: 215, status: 'completed', arrivedAt: relTime(35), startedAt: relTime(18), completedAt: relTime(4),  position: 8  },
+  { id: 9,  patientId: 5,  appointmentId: 210, status: 'completed', arrivedAt: relTime(40), startedAt: relTime(22), completedAt: relTime(7),  position: 9  },
+  { id: 10, patientId: 2,  appointmentId: 209, status: 'completed', arrivedAt: '07:30',     startedAt: '07:45',     completedAt: '08:05',     position: 10 },
+  { id: 11, patientId: 1,  appointmentId: 200, status: 'completed', arrivedAt: '07:50',     startedAt: '08:05',     completedAt: '08:30',     position: 11 },
 ];
 
 export const users = [

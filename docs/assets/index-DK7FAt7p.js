@@ -12289,9 +12289,11 @@ var addDays = (d, n) => {
 	r.setDate(r.getDate() + n);
 	return r;
 };
-var nowH = today.getHours();
-var soonTime = nowH < 21 ? `${String(nowH + 1).padStart(2, "0")}:00` : "16:00";
-var pastTime = nowH > 8 ? `${String(nowH - 2).padStart(2, "0")}:00` : "14:00";
+var relTime = (minutesAgo) => {
+	const d = /* @__PURE__ */ new Date();
+	d.setMinutes(d.getMinutes() - minutesAgo);
+	return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+};
 var initialAppointments = [
 	{
 		id: 1,
@@ -12322,16 +12324,6 @@ var initialAppointments = [
 		time: "15:00",
 		status: "completed",
 		type: "control"
-	},
-	{
-		id: 8,
-		patientId: 1,
-		doctorId: 6,
-		specialtyId: 5,
-		date: fmt(today),
-		time: soonTime,
-		status: "confirmed",
-		type: "consulta"
 	},
 	{
 		id: 2,
@@ -12410,6 +12402,316 @@ var initialAppointments = [
 		specialtyId: 1,
 		date: fmt(addDays(today, 1)),
 		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 110,
+		patientId: 3,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 111,
+		patientId: 5,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 112,
+		patientId: 6,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 113,
+		patientId: 7,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 114,
+		patientId: 9,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 115,
+		patientId: 11,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 116,
+		patientId: 12,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 117,
+		patientId: 13,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "07:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 118,
+		patientId: 14,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 119,
+		patientId: 15,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "11:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 120,
+		patientId: 17,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 121,
+		patientId: 18,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 122,
+		patientId: 19,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 123,
+		patientId: 4,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, 1)),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 124,
+		patientId: 6,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 125,
+		patientId: 8,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, 1)),
+		time: "11:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 126,
+		patientId: 10,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 127,
+		patientId: 12,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 128,
+		patientId: 14,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 129,
+		patientId: 16,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 130,
+		patientId: 17,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 1)),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 131,
+		patientId: 18,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 132,
+		patientId: 20,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 133,
+		patientId: 3,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 134,
+		patientId: 5,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 1)),
+		time: "07:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 135,
+		patientId: 7,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 136,
+		patientId: 9,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 137,
+		patientId: 11,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 138,
+		patientId: 13,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 139,
+		patientId: 15,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 140,
+		patientId: 19,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
 		status: "confirmed",
 		type: "control"
 	},
@@ -12514,17 +12816,297 @@ var initialAppointments = [
 		type: "consulta"
 	},
 	{
-		id: 9,
-		patientId: 2,
-		doctorId: 3,
-		specialtyId: 2,
+		id: 200,
+		patientId: 1,
+		doctorId: 1,
+		specialtyId: 1,
 		date: fmt(today),
-		time: pastTime,
+		time: "08:00",
+		status: "completed",
+		type: "control"
+	},
+	{
+		id: 201,
+		patientId: 4,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "10:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 10,
+		id: 202,
+		patientId: 15,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 203,
+		patientId: 18,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 204,
+		patientId: 20,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 205,
+		patientId: 7,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 206,
+		patientId: 12,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "11:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 207,
+		patientId: 19,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "15:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 208,
+		patientId: 3,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 209,
+		patientId: 2,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "07:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 210,
+		patientId: 5,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "08:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 211,
+		patientId: 13,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 212,
+		patientId: 17,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "11:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 213,
+		patientId: 16,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 214,
+		patientId: 8,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 215,
+		patientId: 9,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(today),
+		time: "08:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 216,
+		patientId: 14,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(today),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 217,
+		patientId: 3,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(today),
+		time: "11:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 218,
+		patientId: 10,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(today),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 219,
+		patientId: 6,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 220,
+		patientId: 20,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
+		time: "11:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 221,
+		patientId: 5,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 222,
+		patientId: 11,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 223,
+		patientId: 8,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(today),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 224,
+		patientId: 12,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(today),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 225,
+		patientId: 6,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(today),
+		time: "14:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 226,
+		patientId: 1,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(today),
+		time: "18:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 227,
+		patientId: 13,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 228,
+		patientId: 17,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(today),
+		time: "07:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 229,
 		patientId: 4,
 		doctorId: 7,
 		specialtyId: 6,
@@ -12534,232 +13116,72 @@ var initialAppointments = [
 		type: "consulta"
 	},
 	{
-		id: 11,
-		patientId: 5,
-		doctorId: 5,
-		specialtyId: 4,
+		id: 230,
+		patientId: 9,
+		doctorId: 7,
+		specialtyId: 6,
 		date: fmt(today),
-		time: "10:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 12,
-		patientId: 6,
-		doctorId: 6,
-		specialtyId: 5,
-		date: fmt(today),
-		time: "11:00",
+		time: "15:00",
 		status: "confirmed",
 		type: "control"
 	},
 	{
-		id: 13,
-		patientId: 7,
-		doctorId: 3,
-		specialtyId: 2,
+		id: 231,
+		patientId: 14,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 232,
+		patientId: 19,
+		doctorId: 8,
+		specialtyId: 7,
 		date: fmt(today),
 		time: "08:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 30,
-		patientId: 14,
-		doctorId: 1,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 31,
-		patientId: 15,
-		doctorId: 4,
-		specialtyId: 3,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 32,
-		patientId: 16,
-		doctorId: 5,
-		specialtyId: 4,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "control"
-	},
-	{
-		id: 33,
-		patientId: 17,
-		doctorId: 7,
-		specialtyId: 6,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 34,
-		patientId: 18,
-		doctorId: 8,
-		specialtyId: 7,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 35,
-		patientId: 19,
-		doctorId: 2,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "15:00",
-		status: "confirmed",
-		type: "control"
-	},
-	{
-		id: 36,
-		patientId: 20,
-		doctorId: 1,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "16:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 37,
-		patientId: 8,
-		doctorId: 5,
-		specialtyId: 4,
-		date: fmt(today),
-		time: "16:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 38,
-		patientId: 9,
-		doctorId: 7,
-		specialtyId: 6,
-		date: fmt(today),
-		time: "16:00",
-		status: "confirmed",
-		type: "control"
-	},
-	{
-		id: 39,
-		patientId: 10,
-		doctorId: 2,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "16:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 40,
+		id: 233,
 		patientId: 11,
 		doctorId: 8,
 		specialtyId: 7,
 		date: fmt(today),
-		time: "16:00",
+		time: "09:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 41,
-		patientId: 3,
-		doctorId: 4,
-		specialtyId: 3,
-		date: fmt(today),
-		time: "16:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 42,
-		patientId: 12,
-		doctorId: 2,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "17:00",
-		status: "confirmed",
-		type: "control"
-	},
-	{
-		id: 43,
-		patientId: 13,
-		doctorId: 5,
-		specialtyId: 4,
-		date: fmt(today),
-		time: "17:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 44,
-		patientId: 14,
-		doctorId: 8,
-		specialtyId: 7,
-		date: fmt(today),
-		time: "17:00",
-		status: "confirmed",
-		type: "control"
-	},
-	{
-		id: 45,
-		patientId: 15,
-		doctorId: 1,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "17:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 46,
-		patientId: 16,
-		doctorId: 7,
-		specialtyId: 6,
-		date: fmt(today),
-		time: "17:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 47,
-		patientId: 17,
-		doctorId: 2,
-		specialtyId: 1,
-		date: fmt(today),
-		time: "18:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 48,
+		id: 234,
 		patientId: 18,
-		doctorId: 1,
-		specialtyId: 1,
+		doctorId: 8,
+		specialtyId: 7,
 		date: fmt(today),
-		time: "17:00",
+		time: "11:00",
 		status: "confirmed",
 		type: "control"
 	},
 	{
-		id: 49,
-		patientId: 19,
+		id: 235,
+		patientId: 7,
 		doctorId: 8,
 		specialtyId: 7,
 		date: fmt(today),
-		time: "18:00",
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 236,
+		patientId: 10,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(today),
+		time: "16:00",
 		status: "confirmed",
 		type: "consulta"
 	},
@@ -12997,52 +13419,52 @@ var initialAppointments = [
 var initialQueue = [
 	{
 		id: 1,
-		patientId: 14,
-		appointmentId: 30,
+		patientId: 19,
+		appointmentId: 207,
 		status: "in_service",
-		arrivedAt: "14:52",
-		startedAt: "15:05",
+		arrivedAt: relTime(25),
+		startedAt: relTime(8),
 		position: 1
 	},
 	{
 		id: 2,
-		patientId: 15,
-		appointmentId: 31,
+		patientId: 10,
+		appointmentId: 218,
 		status: "in_service",
-		arrivedAt: "14:58",
-		startedAt: "15:08",
+		arrivedAt: relTime(20),
+		startedAt: relTime(5),
 		position: 2
 	},
 	{
 		id: 3,
-		patientId: 16,
-		appointmentId: 32,
+		patientId: 9,
+		appointmentId: 230,
 		status: "waiting",
-		arrivedAt: "15:05",
+		arrivedAt: relTime(18),
 		position: 3
 	},
 	{
 		id: 4,
-		patientId: 17,
-		appointmentId: 33,
+		patientId: 18,
+		appointmentId: 203,
 		status: "waiting",
-		arrivedAt: "15:12",
+		arrivedAt: relTime(12),
 		position: 4
 	},
 	{
 		id: 5,
-		patientId: 18,
-		appointmentId: 34,
+		patientId: 8,
+		appointmentId: 214,
 		status: "waiting",
-		arrivedAt: "15:18",
+		arrivedAt: relTime(8),
 		position: 5
 	},
 	{
 		id: 6,
-		patientId: 19,
-		appointmentId: 35,
+		patientId: 11,
+		appointmentId: 222,
 		status: "waiting",
-		arrivedAt: "15:22",
+		arrivedAt: relTime(5),
 		position: 6
 	},
 	{
@@ -13050,47 +13472,47 @@ var initialQueue = [
 		patientId: 20,
 		appointmentId: null,
 		status: "emergency",
-		arrivedAt: "15:40",
+		arrivedAt: relTime(3),
 		position: 0
 	},
 	{
 		id: 8,
-		patientId: 7,
-		appointmentId: 13,
+		patientId: 9,
+		appointmentId: 215,
 		status: "completed",
-		arrivedAt: "07:50",
-		startedAt: "08:05",
-		completedAt: "08:30",
+		arrivedAt: relTime(35),
+		startedAt: relTime(18),
+		completedAt: relTime(4),
 		position: 8
 	},
 	{
 		id: 9,
-		patientId: 4,
-		appointmentId: 10,
+		patientId: 5,
+		appointmentId: 210,
 		status: "completed",
-		arrivedAt: "08:45",
-		startedAt: "09:10",
-		completedAt: "09:40",
+		arrivedAt: relTime(40),
+		startedAt: relTime(22),
+		completedAt: relTime(7),
 		position: 9
 	},
 	{
 		id: 10,
-		patientId: 5,
-		appointmentId: 11,
+		patientId: 2,
+		appointmentId: 209,
 		status: "completed",
-		arrivedAt: "09:40",
-		startedAt: "10:05",
-		completedAt: "10:35",
+		arrivedAt: "07:30",
+		startedAt: "07:45",
+		completedAt: "08:05",
 		position: 10
 	},
 	{
 		id: 11,
-		patientId: 6,
-		appointmentId: 12,
+		patientId: 1,
+		appointmentId: 200,
 		status: "completed",
-		arrivedAt: "10:50",
-		startedAt: "11:10",
-		completedAt: "11:45",
+		arrivedAt: "07:50",
+		startedAt: "08:05",
+		completedAt: "08:30",
 		position: 11
 	}
 ];
@@ -13277,6 +13699,29 @@ function AppProvider({ children }) {
 				if (entry) completeAppointment(entry.appointmentId);
 			}
 		}, [queue, completeAppointment]),
+		revertQueueStatus: (0, import_react.useCallback)((id) => {
+			const reverseMap = {
+				completed: "in_service",
+				in_service: "waiting"
+			};
+			setQueue((prev) => prev.map((q) => {
+				if (q.id !== id) return q;
+				const prevStatus = reverseMap[q.status];
+				if (!prevStatus) return q;
+				const updates = { status: prevStatus };
+				if (q.status === "completed") updates.completedAt = void 0;
+				if (q.status === "in_service") updates.startedAt = void 0;
+				return {
+					...q,
+					...updates
+				};
+			}));
+			const entry = queue.find((q) => q.id === id);
+			if (entry && entry.status === "completed" && entry.appointmentId) setAppointments((prev) => prev.map((a) => a.id === entry.appointmentId ? {
+				...a,
+				status: "confirmed"
+			} : a));
+		}, [queue]),
 		addEmergency: (0, import_react.useCallback)((patientId) => {
 			const now = /* @__PURE__ */ new Date();
 			const entry = {
@@ -13627,6 +14072,16 @@ var ChartColumn = createLucideIcon("chart-column", [
 var ChevronDown = createLucideIcon("chevron-down", [["path", {
 	d: "m6 9 6 6 6-6",
 	key: "qrunsl"
+}]]);
+/**
+* @license lucide-react v1.16.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var ChevronLeft = createLucideIcon("chevron-left", [["path", {
+	d: "m15 18-6-6 6-6",
+	key: "1wnfg3"
 }]]);
 /**
 * @license lucide-react v1.16.0 - ISC
@@ -14030,6 +14485,19 @@ var TriangleAlert = createLucideIcon("triangle-alert", [
 		key: "p32p05"
 	}]
 ]);
+/**
+* @license lucide-react v1.16.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Undo2 = createLucideIcon("undo-2", [["path", {
+	d: "M9 14 4 9l5-5",
+	key: "102s5s"
+}], ["path", {
+	d: "M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11",
+	key: "f3b9sd"
+}]]);
 /**
 * @license lucide-react v1.16.0 - ISC
 *
@@ -14688,9 +15156,11 @@ function PatientDashboard() {
 				className: "text-lg font-semibold text-gray-900 mb-4",
 				children: "Citas próximas"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100",
-				children: upcoming.slice(0, 5).map((appt) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between px-6 py-4",
+				className: "bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden",
+				children: upcoming.slice(0, 5).map((appt) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+					to: "/patient/my-appointments",
+					className: "flex items-center justify-between px-6 py-4 hover:bg-sky-50 transition-colors min-h-[44px]",
+					"aria-label": `Gestionar cita de ${getSpecialtyName(appt.specialtyId)} con ${getDoctorName(appt.doctorId)}`,
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "font-medium text-gray-900",
 						children: getSpecialtyName(appt.specialtyId)
@@ -14698,16 +15168,22 @@ function PatientDashboard() {
 						className: "text-sm text-gray-500",
 						children: getDoctorName(appt.doctorId)
 					})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "text-right text-sm",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-gray-900",
-							children: (/* @__PURE__ */ new Date(appt.date + "T00:00:00")).toLocaleDateString("es-PE", {
-								day: "2-digit",
-								month: "short"
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-gray-500",
-							children: fmt12(appt.time)
+						className: "flex items-center gap-3",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "text-right text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-gray-900",
+								children: (/* @__PURE__ */ new Date(appt.date + "T00:00:00")).toLocaleDateString("es-PE", {
+									day: "2-digit",
+									month: "short"
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-gray-500",
+								children: fmt12(appt.time)
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-sky-600 text-sm",
+							children: "→"
 						})]
 					})]
 				}, appt.id))
@@ -15390,28 +15866,34 @@ function ReceptionistDashboard() {
 					label: "Citas hoy",
 					value: stats.total,
 					icon: CalendarDays,
-					color: "bg-sky-50 text-sky-600"
+					color: "bg-sky-50 text-sky-600",
+					to: "/receptionist/appointments"
 				},
 				{
 					label: "En espera",
 					value: stats.inQueue,
 					icon: Clock,
-					color: "bg-amber-50 text-amber-600"
+					color: "bg-amber-50 text-amber-600",
+					to: "/receptionist/queue"
 				},
 				{
 					label: "En atención",
 					value: stats.attending,
 					icon: Users,
-					color: "bg-green-50 text-green-600"
+					color: "bg-green-50 text-green-600",
+					to: "/receptionist/queue"
 				},
 				{
 					label: "Atendidos",
 					value: stats.completed,
 					icon: CircleCheckBig,
-					color: "bg-purple-50 text-purple-600"
+					color: "bg-purple-50 text-purple-600",
+					to: "/receptionist/queue"
 				}
-			].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "bg-white rounded-2xl border border-gray-200 p-5",
+			].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+				to: item.to,
+				className: "bg-white rounded-2xl border border-gray-200 p-5 hover:border-sky-300 hover:shadow-md transition-all block group",
+				"aria-label": `Ver ${item.label}`,
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 						className: `w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${item.color}`,
@@ -15424,9 +15906,9 @@ function ReceptionistDashboard() {
 						className: "text-2xl font-bold text-gray-900",
 						children: item.value
 					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-sm text-gray-500",
-						children: item.label
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "text-sm text-gray-500 group-hover:text-sky-600 transition-colors",
+						children: [item.label, " →"]
 					})
 				]
 			}, item.label))
@@ -17065,16 +17547,28 @@ function NewAppointment() {
 //#region src/pages/receptionist/DoctorAvailability.jsx
 function DoctorAvailability() {
 	const { specialties, doctors, getAvailableSlots } = useApp();
+	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
 	const [specialtyId, setSpecialtyId] = (0, import_react.useState)(null);
 	const [doctorId, setDoctorId] = (0, import_react.useState)(null);
-	const [date, setDate] = (0, import_react.useState)("");
+	const [date, setDate] = (0, import_react.useState)(today);
 	const filteredDoctors = specialtyId ? doctors.filter((d) => d.specialtyId === specialtyId) : doctors;
 	doctors.find((d) => d.id === doctorId);
 	doctorId && date && getAvailableSlots(doctorId, date);
-	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
 	const maxDate = /* @__PURE__ */ new Date();
 	maxDate.setDate(maxDate.getDate() + 30);
 	const maxDateStr = maxDate.toLocaleDateString("sv-SE");
+	const shiftDay = (days) => {
+		const d = /* @__PURE__ */ new Date(date + "T00:00:00");
+		d.setDate(d.getDate() + days);
+		const newStr = d.toLocaleDateString("sv-SE");
+		if (newStr >= today && newStr <= maxDateStr) setDate(newStr);
+	};
+	const isToday = date === today;
+	const dateLabel = (/* @__PURE__ */ new Date(date + "T00:00:00")).toLocaleDateString("es-PE", {
+		weekday: "long",
+		day: "numeric",
+		month: "long"
+	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "max-w-3xl mx-auto",
 		children: [
@@ -17087,8 +17581,8 @@ function DoctorAvailability() {
 				children: "Consulta horarios disponibles por especialidad y médico."
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid sm:grid-cols-2 gap-4 mb-6",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+				className: "mb-6",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 					className: "block text-sm font-medium text-gray-700 mb-1",
 					children: "Especialidad"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
@@ -17096,7 +17590,6 @@ function DoctorAvailability() {
 					onChange: (e) => {
 						setSpecialtyId(e.target.value ? Number(e.target.value) : null);
 						setDoctorId(null);
-						setDate("");
 					},
 					className: "w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px] bg-white",
 					"aria-label": "Filtrar por especialidad",
@@ -17107,18 +17600,61 @@ function DoctorAvailability() {
 						value: s.id,
 						children: s.name
 					}, s.id))]
-				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-					className: "block text-sm font-medium text-gray-700 mb-1",
-					children: "Fecha a consultar"
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-					type: "date",
-					min: today,
-					max: maxDateStr,
-					value: date,
-					onChange: (e) => setDate(e.target.value),
-					className: "w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none min-h-[44px]",
-					"aria-label": "Fecha para consultar disponibilidad"
-				})] })]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "bg-white rounded-2xl border border-gray-200 p-4 mb-6",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center justify-between gap-3",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => shiftDay(-1),
+							disabled: isToday,
+							className: "w-11 h-11 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed",
+							"aria-label": "Día anterior",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronLeft, {
+								className: "w-5 h-5",
+								"aria-hidden": "true"
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "flex-1 flex items-center justify-center gap-3",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "text-center",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-semibold text-gray-900 capitalize",
+									children: dateLabel
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+									type: "date",
+									min: today,
+									max: maxDateStr,
+									value: date,
+									onChange: (e) => setDate(e.target.value || today),
+									className: "text-xs text-sky-600 bg-transparent border-0 outline-none cursor-pointer hover:underline focus:underline",
+									"aria-label": "Cambiar fecha"
+								})]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							onClick: () => shiftDay(1),
+							className: "w-11 h-11 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50",
+							"aria-label": "Día siguiente",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, {
+								className: "w-5 h-5",
+								"aria-hidden": "true"
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							onClick: () => setDate(today),
+							disabled: isToday,
+							className: `px-4 py-2 rounded-lg text-sm font-medium min-h-[44px] flex items-center gap-1.5 ${isToday ? "bg-sky-100 text-sky-700 cursor-default" : "bg-sky-600 text-white hover:bg-sky-700"}`,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarDays, {
+								className: "w-4 h-4",
+								"aria-hidden": "true"
+							}), "Hoy"]
+						})
+					]
+				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "space-y-4",
@@ -17149,9 +17685,14 @@ function DoctorAvailability() {
 								})] })]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "text-right",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "text-sm font-medium text-sky-600",
-									children: date ? `${slots.length} horario${slots.length !== 1 ? "s" : ""} disponible${slots.length !== 1 ? "s" : ""}` : `${doc.schedule.length} turnos diarios`
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+									className: `text-sm font-semibold ${slots.length === 0 ? "text-red-600" : "text-green-600"}`,
+									children: [
+										slots.length,
+										" de ",
+										doc.schedule.length,
+										" libres"
+									]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "text-xs text-gray-500",
 									children: [
@@ -17162,68 +17703,38 @@ function DoctorAvailability() {
 									]
 								})]
 							})]
-						}), isSelected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						}), isSelected && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "px-6 pb-5 border-t border-gray-100 pt-4",
-							children: !date ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-									className: "text-sm font-medium text-gray-700 mb-2",
-									children: "Horario regular del médico"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "grid grid-cols-4 sm:grid-cols-7 gap-2",
-									children: doc.schedule.map((slot) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-										className: "py-2 px-1 rounded-lg border border-gray-200 bg-gray-50 text-center text-sm text-gray-700",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "grid grid-cols-4 sm:grid-cols-7 gap-2",
+								children: doc.schedule.map((slot) => {
+									const isFree = slots.includes(slot);
+									return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: `py-2 px-1 rounded-lg border text-center text-sm font-medium ${isFree ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-400 line-through"}`,
+										title: isFree ? "Disponible" : "Ocupado",
 										children: fmt12(slot)
-									}, slot))
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-xs text-gray-500 mt-3 flex items-center gap-1",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, {
-										className: "w-3.5 h-3.5",
-										"aria-hidden": "true"
-									}), "Selecciona una fecha arriba para ver la disponibilidad real de este día."]
+									}, slot);
 								})
-							] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-									className: "text-sm font-medium text-gray-700 mb-2",
-									children: ["Horarios — ", (/* @__PURE__ */ new Date(date + "T00:00:00")).toLocaleDateString("es-PE", {
-										weekday: "long",
-										day: "numeric",
-										month: "long"
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "grid grid-cols-4 sm:grid-cols-7 gap-2",
-									children: doc.schedule.map((slot) => {
-										const isFree = slots.includes(slot);
-										return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-											className: `py-2 px-1 rounded-lg border text-center text-sm font-medium ${isFree ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-400 line-through"}`,
-											title: isFree ? "Disponible" : "Ocupado",
-											children: fmt12(slot)
-										}, slot);
-									})
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "flex items-center gap-4 mt-3 text-xs text-gray-500",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-										className: "flex items-center gap-1.5",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-3 h-3 rounded border border-green-200 bg-green-50 inline-block" }),
-											"Disponible (",
-											slots.length,
-											")"
-										]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-										className: "flex items-center gap-1.5",
-										children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-3 h-3 rounded border border-red-200 bg-red-50 inline-block" }),
-											"Ocupado (",
-											doc.schedule.length - slots.length,
-											")"
-										]
-									})]
-								})
-							] })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-4 mt-3 text-xs text-gray-500",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "flex items-center gap-1.5",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-3 h-3 rounded border border-green-200 bg-green-50 inline-block" }),
+										"Disponible (",
+										slots.length,
+										")"
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "flex items-center gap-1.5",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "w-3 h-3 rounded border border-red-200 bg-red-50 inline-block" }),
+										"Ocupado (",
+										doc.schedule.length - slots.length,
+										")"
+									]
+								})]
+							})]
 						})]
 					}, doc.id);
 				})
@@ -17233,6 +17744,23 @@ function DoctorAvailability() {
 }
 //#endregion
 //#region src/pages/receptionist/QueueManagement.jsx
+var UNDO_WINDOW_MIN = {
+	in_service: 15,
+	completed: 10
+};
+var parseTimeToToday = (timeStr) => {
+	if (!timeStr) return 0;
+	const [h, m] = timeStr.split(":").map(Number);
+	const d = /* @__PURE__ */ new Date();
+	d.setHours(h, m, 0, 0);
+	return d.getTime();
+};
+var canRevert = (q) => {
+	const now = Date.now();
+	if (q.status === "completed" && q.completedAt) return now - parseTimeToToday(q.completedAt) <= UNDO_WINDOW_MIN.completed * 60 * 1e3;
+	if (q.status === "in_service" && q.startedAt) return now - parseTimeToToday(q.startedAt) <= UNDO_WINDOW_MIN.in_service * 60 * 1e3;
+	return false;
+};
 var columnConfig = {
 	emergency: {
 		title: "Urgencias",
@@ -17260,10 +17788,15 @@ var columnConfig = {
 	}
 };
 function QueueManagement() {
-	const { queue, patients, updateQueueStatus, addEmergency, searchPatients } = useApp();
+	const { queue, patients, updateQueueStatus, revertQueueStatus, addEmergency, searchPatients } = useApp();
 	const [showEmergencyModal, setShowEmergencyModal] = (0, import_react.useState)(false);
 	const [emergencySearch, setEmergencySearch] = (0, import_react.useState)("");
+	const [, setTick] = (0, import_react.useState)(0);
 	const emergencyRef = useFocusTrap(showEmergencyModal);
+	(0, import_react.useEffect)(() => {
+		const interval = setInterval(() => setTick((t) => t + 1), 6e4);
+		return () => clearInterval(interval);
+	}, []);
 	const getPatientName = (id) => {
 		const p = patients.find((p) => p.id === id);
 		return p ? `${p.firstName} ${p.lastName}` : "Desconocido";
@@ -17433,10 +17966,22 @@ function QueueManagement() {
 										" ",
 										fmt12(q.arrivedAt)
 									]
-								}), nextStatus[key] && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-									onClick: () => updateQueueStatus(q.id, nextStatus[key]),
-									className: "px-3 py-1.5 text-xs font-medium bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 transition-colors min-h-[32px]",
-									children: [nextLabel[key], " →"]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex items-center gap-1",
+									children: [canRevert(q) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+										onClick: () => revertQueueStatus(q.id),
+										className: "p-1.5 text-gray-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center",
+										title: key === "completed" ? `Volver a "En atención" (disponible ${UNDO_WINDOW_MIN.completed} min)` : `Volver a "En espera" (disponible ${UNDO_WINDOW_MIN.in_service} min)`,
+										"aria-label": key === "completed" ? "Volver a en atención" : "Volver a en espera",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Undo2, {
+											className: "w-3.5 h-3.5",
+											"aria-hidden": "true"
+										})
+									}), nextStatus[key] && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+										onClick: () => updateQueueStatus(q.id, nextStatus[key]),
+										className: "px-3 py-1.5 text-xs font-medium bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 transition-colors min-h-[32px]",
+										children: [nextLabel[key], " →"]
+									})]
 								})]
 							})]
 						}, q.id))
@@ -17451,7 +17996,11 @@ function QueueManagement() {
 function AdminDashboard() {
 	const { currentUser, appointments, patients, queue, doctors, specialties } = useApp();
 	const today = (/* @__PURE__ */ new Date()).toLocaleDateString("sv-SE");
-	const [dateFrom, setDateFrom] = (0, import_react.useState)(today);
+	const [dateFrom, setDateFrom] = (0, import_react.useState)((() => {
+		const d = /* @__PURE__ */ new Date();
+		d.setDate(d.getDate() - 6);
+		return d.toLocaleDateString("sv-SE");
+	})());
 	const [dateTo, setDateTo] = (0, import_react.useState)(today);
 	const [redistributed, setRedistributed] = (0, import_react.useState)(false);
 	const rangeAppts = appointments.filter((a) => a.date >= dateFrom && a.date <= dateTo);

@@ -1,8 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Clock, User, Play, CheckCircle, AlertTriangle, Plus, Search } from 'lucide-react';
+import { Clock, User, Play, CheckCircle, AlertTriangle, Plus, Search, Undo2 } from 'lucide-react';
 import { fmt12 } from '../../utils/formatTime';
 import useFocusTrap from '../../hooks/useFocusTrap';
+
+const UNDO_WINDOW_MIN = { in_service: 15, completed: 10 };
+
+const parseTimeToToday = (timeStr) => {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(':').map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.getTime();
+};
+
+const canRevert = (q) => {
+  const now = Date.now();
+  if (q.status === 'completed' && q.completedAt) {
+    return (now - parseTimeToToday(q.completedAt)) <= UNDO_WINDOW_MIN.completed * 60 * 1000;
+  }
+  if (q.status === 'in_service' && q.startedAt) {
+    return (now - parseTimeToToday(q.startedAt)) <= UNDO_WINDOW_MIN.in_service * 60 * 1000;
+  }
+  return false;
+};
 
 const columnConfig = {
   emergency: { title: 'Urgencias', color: 'border-red-300 bg-red-50', badge: 'bg-red-100 text-red-700', icon: AlertTriangle },
@@ -12,10 +33,16 @@ const columnConfig = {
 };
 
 export default function QueueManagement() {
-  const { queue, patients, updateQueueStatus, addEmergency, searchPatients } = useApp();
+  const { queue, patients, updateQueueStatus, revertQueueStatus, addEmergency, searchPatients } = useApp();
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [emergencySearch, setEmergencySearch] = useState('');
+  const [, setTick] = useState(0);
   const emergencyRef = useFocusTrap(showEmergencyModal);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const getPatientName = (id) => {
     const p = patients.find(p => p.id === id);
@@ -137,14 +164,26 @@ export default function QueueManagement() {
                       <span className="text-xs text-gray-500 flex items-center gap-1">
                         <Clock className="w-3 h-3" aria-hidden="true" /> {fmt12(q.arrivedAt)}
                       </span>
-                      {nextStatus[key] && (
-                        <button
-                          onClick={() => updateQueueStatus(q.id, nextStatus[key])}
-                          className="px-3 py-1.5 text-xs font-medium bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 transition-colors min-h-[32px]"
-                        >
-                          {nextLabel[key]} →
-                        </button>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {canRevert(q) && (
+                          <button
+                            onClick={() => revertQueueStatus(q.id)}
+                            className="p-1.5 text-gray-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
+                            title={key === 'completed' ? `Volver a "En atención" (disponible ${UNDO_WINDOW_MIN.completed} min)` : `Volver a "En espera" (disponible ${UNDO_WINDOW_MIN.in_service} min)`}
+                            aria-label={key === 'completed' ? 'Volver a en atención' : 'Volver a en espera'}
+                          >
+                            <Undo2 className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
+                        )}
+                        {nextStatus[key] && (
+                          <button
+                            onClick={() => updateQueueStatus(q.id, nextStatus[key])}
+                            className="px-3 py-1.5 text-xs font-medium bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 transition-colors min-h-[32px]"
+                          >
+                            {nextLabel[key]} →
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
