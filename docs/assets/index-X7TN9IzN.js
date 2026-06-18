@@ -11953,7 +11953,8 @@ var doctors = [
 			"11:00",
 			"14:00",
 			"15:00",
-			"16:00"
+			"16:00",
+			"17:00"
 		]
 	},
 	{
@@ -11966,7 +11967,8 @@ var doctors = [
 			"11:00",
 			"15:00",
 			"16:00",
-			"17:00"
+			"17:00",
+			"18:00"
 		]
 	},
 	{
@@ -11980,7 +11982,9 @@ var doctors = [
 			"10:00",
 			"11:00",
 			"14:00",
-			"15:00"
+			"15:00",
+			"16:00",
+			"17:00"
 		]
 	},
 	{
@@ -11993,7 +11997,8 @@ var doctors = [
 			"10:00",
 			"11:00",
 			"14:00",
-			"15:00"
+			"15:00",
+			"16:00"
 		]
 	},
 	{
@@ -12006,7 +12011,8 @@ var doctors = [
 			"11:00",
 			"14:00",
 			"15:00",
-			"16:00"
+			"16:00",
+			"17:00"
 		]
 	},
 	{
@@ -12020,7 +12026,8 @@ var doctors = [
 			"14:00",
 			"15:00",
 			"16:00",
-			"17:00"
+			"17:00",
+			"18:00"
 		]
 	},
 	{
@@ -12033,7 +12040,8 @@ var doctors = [
 			"09:00",
 			"10:00",
 			"15:00",
-			"16:00"
+			"16:00",
+			"17:00"
 		]
 	},
 	{
@@ -12046,7 +12054,9 @@ var doctors = [
 			"10:00",
 			"11:00",
 			"14:00",
-			"15:00"
+			"15:00",
+			"16:00",
+			"17:00"
 		]
 	}
 ];
@@ -12193,6 +12203,83 @@ var initialPatients = [
 		birthDate: "1987-07-19",
 		address: "Av. América Sur 1340, Trujillo",
 		gender: "F"
+	},
+	{
+		id: 14,
+		dni: "47891234",
+		firstName: "Sofía",
+		lastName: "Reyes Aguirre",
+		phone: "912345678",
+		email: "sofia.reyes@email.com",
+		birthDate: "1998-03-10",
+		address: "Urb. California 780, Trujillo",
+		gender: "F"
+	},
+	{
+		id: 15,
+		dni: "77234561",
+		firstName: "Diego",
+		lastName: "Alvarado Méndez",
+		phone: "923456789",
+		email: "diego.alvarado@email.com",
+		birthDate: "1993-11-22",
+		address: "Av. Federico Villarreal 1200, Trujillo",
+		gender: "M"
+	},
+	{
+		id: 16,
+		dni: "48123456",
+		firstName: "Patricia",
+		lastName: "Vásquez Espino",
+		phone: "934567890",
+		email: "patricia.vasquez@email.com",
+		birthDate: "1970-06-15",
+		address: "Jr. Independencia 450, Trujillo",
+		gender: "F"
+	},
+	{
+		id: 17,
+		dni: "78345612",
+		firstName: "Manuel",
+		lastName: "Quispe Salinas",
+		phone: "945678901",
+		email: "manuel.quispe@email.com",
+		birthDate: "1982-09-08",
+		address: "Urb. Los Laureles 123, Trujillo",
+		gender: "M"
+	},
+	{
+		id: 18,
+		dni: "44567891",
+		firstName: "Claudia",
+		lastName: "Morales Tafur",
+		phone: "956789012",
+		email: "claudia.morales@email.com",
+		birthDate: "1996-01-30",
+		address: "Av. Túpac Amaru 890, Trujillo",
+		gender: "F"
+	},
+	{
+		id: 19,
+		dni: "79456123",
+		firstName: "Luis Eduardo",
+		lastName: "Benites Campos",
+		phone: "967890123",
+		email: "luis.benites@email.com",
+		birthDate: "1979-12-05",
+		address: "Urb. El Recreo 567, Trujillo",
+		gender: "M"
+	},
+	{
+		id: 20,
+		dni: "45678123",
+		firstName: "Verónica",
+		lastName: "Núñez Pretell",
+		phone: "978901234",
+		email: "veronica.nunez@email.com",
+		birthDate: "1988-04-20",
+		address: "Av. Los Incas 2340, Trujillo",
+		gender: "F"
 	}
 ];
 var today = /* @__PURE__ */ new Date();
@@ -12203,58 +12290,18 @@ var addDays = (d, n) => {
 	return r;
 };
 var nowH = today.getHours();
-var soonTime = nowH < 21 ? `${String(nowH + 1).padStart(2, "0")}:00` : "10:00";
-var pastTime = nowH > 8 ? `${String(nowH - 2).padStart(2, "0")}:00` : "07:00";
+var soonTime = nowH < 21 ? `${String(nowH + 1).padStart(2, "0")}:00` : "16:00";
+var pastTime = nowH > 8 ? `${String(nowH - 2).padStart(2, "0")}:00` : "14:00";
 var initialAppointments = [
 	{
 		id: 1,
 		patientId: 1,
 		doctorId: 1,
 		specialtyId: 1,
-		date: fmt(addDays(today, 2)),
+		date: fmt(addDays(today, 3)),
 		time: "10:00",
 		status: "confirmed",
 		type: "control"
-	},
-	{
-		id: 2,
-		patientId: 2,
-		doctorId: 3,
-		specialtyId: 2,
-		date: fmt(addDays(today, 1)),
-		time: "09:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 3,
-		patientId: 3,
-		doctorId: 5,
-		specialtyId: 4,
-		date: fmt(addDays(today, 3)),
-		time: "14:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 8,
-		patientId: 1,
-		doctorId: 6,
-		specialtyId: 5,
-		date: fmt(today),
-		time: soonTime,
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 9,
-		patientId: 2,
-		doctorId: 3,
-		specialtyId: 2,
-		date: fmt(today),
-		time: pastTime,
-		status: "confirmed",
-		type: "consulta"
 	},
 	{
 		id: 4,
@@ -12277,23 +12324,203 @@ var initialAppointments = [
 		type: "control"
 	},
 	{
-		id: 6,
-		patientId: 2,
+		id: 8,
+		patientId: 1,
 		doctorId: 6,
 		specialtyId: 5,
-		date: fmt(addDays(today, -14)),
-		time: "08:00",
-		status: "completed",
+		date: fmt(today),
+		time: soonTime,
+		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 7,
-		patientId: 3,
+		id: 2,
+		patientId: 2,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 14,
+		patientId: 8,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 15,
+		patientId: 9,
 		doctorId: 4,
 		specialtyId: 3,
-		date: fmt(addDays(today, -5)),
+		date: fmt(addDays(today, 1)),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 19,
+		patientId: 13,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 1)),
 		time: "11:00",
-		status: "cancelled",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 50,
+		patientId: 14,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 1)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 51,
+		patientId: 16,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 1)),
+		time: "16:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 52,
+		patientId: 18,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, 1)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 53,
+		patientId: 20,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, 1)),
+		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 3,
+		patientId: 3,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 2)),
+		time: "14:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 16,
+		patientId: 10,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, 2)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 17,
+		patientId: 11,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, 2)),
+		time: "15:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 54,
+		patientId: 15,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, 2)),
+		time: "09:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 55,
+		patientId: 17,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 2)),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 56,
+		patientId: 19,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, 2)),
+		time: "11:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 18,
+		patientId: 12,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, 3)),
+		time: "08:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 57,
+		patientId: 4,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, 3)),
+		time: "14:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 58,
+		patientId: 6,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, 3)),
+		time: "10:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 59,
+		patientId: 20,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, 3)),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 9,
+		patientId: 2,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(today),
+		time: pastTime,
+		status: "confirmed",
 		type: "consulta"
 	},
 	{
@@ -12337,63 +12564,223 @@ var initialAppointments = [
 		type: "consulta"
 	},
 	{
-		id: 14,
-		patientId: 8,
+		id: 30,
+		patientId: 14,
 		doctorId: 1,
 		specialtyId: 1,
-		date: fmt(addDays(today, 1)),
-		time: "09:00",
+		date: fmt(today),
+		time: "15:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 15,
-		patientId: 9,
+		id: 31,
+		patientId: 15,
 		doctorId: 4,
 		specialtyId: 3,
-		date: fmt(addDays(today, 1)),
-		time: "14:00",
+		date: fmt(today),
+		time: "15:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 16,
-		patientId: 10,
-		doctorId: 8,
-		specialtyId: 7,
-		date: fmt(addDays(today, 2)),
-		time: "10:00",
-		status: "confirmed",
-		type: "consulta"
-	},
-	{
-		id: 17,
-		patientId: 11,
-		doctorId: 2,
-		specialtyId: 1,
-		date: fmt(addDays(today, 2)),
+		id: 32,
+		patientId: 16,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
 		time: "15:00",
 		status: "confirmed",
 		type: "control"
 	},
 	{
-		id: 18,
-		patientId: 12,
+		id: 33,
+		patientId: 17,
 		doctorId: 7,
 		specialtyId: 6,
-		date: fmt(addDays(today, 3)),
-		time: "08:00",
+		date: fmt(today),
+		time: "15:00",
 		status: "confirmed",
 		type: "consulta"
 	},
 	{
-		id: 19,
+		id: 34,
+		patientId: 18,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(today),
+		time: "15:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 35,
+		patientId: 19,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "15:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 36,
+		patientId: 20,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 37,
+		patientId: 8,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 38,
+		patientId: 9,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 39,
+		patientId: 10,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 40,
+		patientId: 11,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 41,
+		patientId: 3,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(today),
+		time: "16:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 42,
+		patientId: 12,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 43,
 		patientId: 13,
 		doctorId: 5,
 		specialtyId: 4,
-		date: fmt(addDays(today, 1)),
-		time: "11:00",
+		date: fmt(today),
+		time: "17:00",
 		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 44,
+		patientId: 14,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 45,
+		patientId: 15,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 46,
+		patientId: 16,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 47,
+		patientId: 17,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "18:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 48,
+		patientId: 18,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(today),
+		time: "17:00",
+		status: "confirmed",
+		type: "control"
+	},
+	{
+		id: 49,
+		patientId: 19,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(today),
+		time: "18:00",
+		status: "confirmed",
+		type: "consulta"
+	},
+	{
+		id: 6,
+		patientId: 2,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, -14)),
+		time: "08:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 7,
+		patientId: 3,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, -5)),
+		time: "11:00",
+		status: "cancelled",
 		type: "consulta"
 	},
 	{
@@ -12495,40 +12882,216 @@ var initialAppointments = [
 		time: "14:00",
 		status: "completed",
 		type: "consulta"
+	},
+	{
+		id: 60,
+		patientId: 14,
+		doctorId: 3,
+		specialtyId: 2,
+		date: fmt(addDays(today, -9)),
+		time: "09:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 61,
+		patientId: 15,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, -22)),
+		time: "11:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 62,
+		patientId: 16,
+		doctorId: 7,
+		specialtyId: 6,
+		date: fmt(addDays(today, -11)),
+		time: "08:00",
+		status: "completed",
+		type: "control"
+	},
+	{
+		id: 63,
+		patientId: 17,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, -7)),
+		time: "14:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 64,
+		patientId: 18,
+		doctorId: 1,
+		specialtyId: 1,
+		date: fmt(addDays(today, -25)),
+		time: "10:00",
+		status: "completed",
+		type: "control"
+	},
+	{
+		id: 65,
+		patientId: 19,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, -3)),
+		time: "15:00",
+		status: "cancelled",
+		type: "consulta"
+	},
+	{
+		id: 66,
+		patientId: 20,
+		doctorId: 6,
+		specialtyId: 5,
+		date: fmt(addDays(today, -16)),
+		time: "09:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 67,
+		patientId: 4,
+		doctorId: 2,
+		specialtyId: 1,
+		date: fmt(addDays(today, -28)),
+		time: "16:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 68,
+		patientId: 5,
+		doctorId: 8,
+		specialtyId: 7,
+		date: fmt(addDays(today, -19)),
+		time: "11:00",
+		status: "completed",
+		type: "consulta"
+	},
+	{
+		id: 69,
+		patientId: 6,
+		doctorId: 4,
+		specialtyId: 3,
+		date: fmt(addDays(today, -13)),
+		time: "14:00",
+		status: "cancelled",
+		type: "consulta"
+	},
+	{
+		id: 70,
+		patientId: 7,
+		doctorId: 5,
+		specialtyId: 4,
+		date: fmt(addDays(today, -21)),
+		time: "10:00",
+		status: "completed",
+		type: "control"
 	}
 ];
 var initialQueue = [
 	{
 		id: 1,
-		patientId: 7,
-		appointmentId: 13,
+		patientId: 14,
+		appointmentId: 30,
 		status: "in_service",
-		arrivedAt: "07:50",
+		arrivedAt: "14:52",
+		startedAt: "15:05",
 		position: 1
 	},
 	{
 		id: 2,
-		patientId: 4,
-		appointmentId: 10,
-		status: "waiting",
-		arrivedAt: "08:45",
+		patientId: 15,
+		appointmentId: 31,
+		status: "in_service",
+		arrivedAt: "14:58",
+		startedAt: "15:08",
 		position: 2
 	},
 	{
 		id: 3,
-		patientId: 5,
-		appointmentId: 11,
+		patientId: 16,
+		appointmentId: 32,
 		status: "waiting",
-		arrivedAt: "09:40",
+		arrivedAt: "15:05",
 		position: 3
 	},
 	{
 		id: 4,
+		patientId: 17,
+		appointmentId: 33,
+		status: "waiting",
+		arrivedAt: "15:12",
+		position: 4
+	},
+	{
+		id: 5,
+		patientId: 18,
+		appointmentId: 34,
+		status: "waiting",
+		arrivedAt: "15:18",
+		position: 5
+	},
+	{
+		id: 6,
+		patientId: 19,
+		appointmentId: 35,
+		status: "waiting",
+		arrivedAt: "15:22",
+		position: 6
+	},
+	{
+		id: 7,
+		patientId: 20,
+		appointmentId: null,
+		status: "emergency",
+		arrivedAt: "15:40",
+		position: 0
+	},
+	{
+		id: 8,
+		patientId: 7,
+		appointmentId: 13,
+		status: "completed",
+		arrivedAt: "07:50",
+		startedAt: "08:05",
+		completedAt: "08:30",
+		position: 8
+	},
+	{
+		id: 9,
+		patientId: 4,
+		appointmentId: 10,
+		status: "completed",
+		arrivedAt: "08:45",
+		startedAt: "09:10",
+		completedAt: "09:40",
+		position: 9
+	},
+	{
+		id: 10,
+		patientId: 5,
+		appointmentId: 11,
+		status: "completed",
+		arrivedAt: "09:40",
+		startedAt: "10:05",
+		completedAt: "10:35",
+		position: 10
+	},
+	{
+		id: 11,
 		patientId: 6,
 		appointmentId: 12,
-		status: "waiting",
+		status: "completed",
 		arrivedAt: "10:50",
-		position: 4
+		startedAt: "11:10",
+		completedAt: "11:45",
+		position: 11
 	}
 ];
 var users = [
